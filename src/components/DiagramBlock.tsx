@@ -73,7 +73,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
     return () => {
       cancelled = true
     }
-  }, [block.body, block.format, reactId])
+  }, [block.body, block.format, reactId, embedded])
 
   return (
     <figure

@@ -16,7 +16,7 @@ export const posterColors = [
 
 export const diagramFormats = ["mermaid", "vega_lite"] as const
 
-const vegaLiteBodySchema = z.any().refine((value) => value !== undefined, {
+const vegaLiteBodySchema = z.union([z.string(), z.record(z.string(), z.unknown())]).refine((value) => value !== undefined, {
   message: "diagram.body is required",
 })
 
@@ -39,6 +39,14 @@ const vegaLiteDiagramContentSchema = z.object({
   width: z.number().min(1).max(100).optional(),
   body: vegaLiteBodySchema,
   caption: z.string().min(1, "diagram.caption is required"),
+})
+
+const mermaidDiagramBlockSchema = mermaidDiagramContentSchema.extend({
+  title: z.string().optional(),
+})
+
+const vegaLiteDiagramBlockSchema = vegaLiteDiagramContentSchema.extend({
+  title: z.string().optional(),
 })
 
 const diagramContentSchema = z.union([
@@ -74,22 +82,8 @@ const blockSchema: BlockSchema = z.lazy(() =>
         .array(blockSchema)
         .min(1, "columns.columns must have at least 1 item"),
     }),
-    z.object({
-      type: z.literal("diagram"),
-      format: z.literal("mermaid"),
-      title: z.string().optional(),
-      width: z.number().min(1).max(100).optional(),
-      body: z.string().min(1, "diagram.body is required"),
-      caption: z.string().min(1, "diagram.caption is required"),
-    }),
-    z.object({
-      type: z.literal("diagram"),
-      format: z.literal("vega_lite"),
-      title: z.string().optional(),
-      width: z.number().min(1).max(100).optional(),
-      body: vegaLiteBodySchema,
-      caption: z.string().min(1, "diagram.caption is required"),
-    }),
+    mermaidDiagramBlockSchema,
+    vegaLiteDiagramBlockSchema,
   ])
 )
 

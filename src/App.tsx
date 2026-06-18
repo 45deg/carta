@@ -4,16 +4,16 @@ import {
   CheckCircle2,
   ChevronDown,
   Clipboard,
-  FileCode2,
-  FileImage,
-  Printer,
   TriangleAlert,
 } from "lucide-react"
 
 import yaml from "js-yaml"
 import { YamlEditor } from "@/components/YamlEditor"
 import { PosterPreview } from "@/components/PosterPreview"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { StepNumber } from "@/components/StepNumber"
+import { ValidationPanel } from "@/components/ValidationPanel"
+import { ExportDropdown, type ExportFormat } from "@/components/ExportDropdown"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -23,14 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -45,68 +37,10 @@ import {
   type Poster,
   type PosterValidationResult,
 } from "@/schema/posterSchema"
-
-type ExportFormat = "png" | "svg" | "pdf" | "html"
-
-const posterWidthOptions = [720, 840, 960, 1080, 1200]
-
-const samplePoster: Poster = {
-  title: "再帰と分割統治の学習ポスター",
-  description:
-    "再帰的な問題分解を、カード・列・図で短時間に復習できるよう整理したポスターです。",
-  blocks: [
-    {
-      type: "card",
-      title: "要点",
-      emoji: "💡",
-      color: "important",
-      body: "再帰は **小さな同型問題** に分けて解く考え方です。\n\n| 観点 | 確認すること |\n|---|---|\n| 終了条件 | いつ止まるか |\n| 再帰ステップ | どのように小さくするか |\n| 結合 | 答えをどう戻すか |\n\n数式も扱えます。\n\n$$\nT(n)=2T(n/2)+O(n)\n$$",
-    },
-    {
-      type: "columns",
-      size: [1, 1],
-      columns: [
-        {
-          type: "card",
-          title: "手順",
-          emoji: "1",
-          color: "procedure",
-          body: "1. 問題を観察する\n2. 最小ケースを決める\n3. 小さい問題へ変換する\n4. 戻り値を組み立てる",
-        },
-        {
-          type: "diagram",
-          format: "mermaid",
-          title: "処理の流れ",
-          body: "flowchart TD\n  A[大きな問題] --> B[小さな問題1]\n  A --> C[小さな問題2]\n  B --> D[結果を結合]\n  C --> D",
-          caption: "分割統治では、分けた結果を最後に結合します。",
-        },
-      ],
-    },
-    {
-      type: "diagram",
-      format: "vega_lite",
-      title: "理解度チェック",
-      width: 70,
-      body: {
-        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-        data: {
-          values: [
-            { topic: "終了条件", score: 4 },
-            { topic: "分解", score: 3 },
-            { topic: "結合", score: 5 },
-          ],
-        },
-        mark: "bar",
-        encoding: {
-          x: { field: "topic", type: "nominal" },
-          y: { field: "score", type: "quantitative" },
-          color: { field: "topic", type: "nominal" },
-        },
-      },
-      caption: "Vega-Liteで簡単な確認グラフも表示できます。",
-    },
-  ],
-}
+import {
+  posterWidthOptions,
+  samplePoster,
+} from "@/constants/posterDefaults"
 
 const initialYaml = yaml.dump(samplePoster, { lineWidth: -1 })
 
@@ -124,6 +58,8 @@ export function App() {
   const [posterWidth, setPosterWidth] = useState(960)
   const [isSaving, setIsSaving] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [copiedPrompt, setCopiedPrompt] = useState(false)
+  const [exportError, setExportError] = useState<string | null>(null)
   const posterRef = useRef<HTMLDivElement>(null)
   const exportPosterRef = useRef<HTMLDivElement>(null)
 
@@ -165,6 +101,16 @@ export function App() {
     setMode("preview")
   }
 
+  async function handleCopyPrompt() {
+    try {
+      await navigator.clipboard.writeText(PROMPT)
+      setCopiedPrompt(true)
+      setTimeout(() => setCopiedPrompt(false), 2000)
+    } catch {
+      // ignore
+    }
+  }
+
   async function handleExport(format: ExportFormat) {
     const node = exportPosterRef.current
 
@@ -173,6 +119,7 @@ export function App() {
     }
 
     setIsSaving(true)
+    setExportError(null)
     try {
       if (format === "png") {
         await savePosterPng(node, poster, posterWidth)
@@ -183,6 +130,8 @@ export function App() {
       } else {
         printPoster()
       }
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : "エクスポート中にエラーが発生しました。")
     } finally {
       setIsSaving(false)
     }
@@ -226,10 +175,10 @@ export function App() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => void navigator.clipboard.writeText(PROMPT)}
+                  onClick={handleCopyPrompt}
                 >
-                  <Clipboard />
-                  コピー
+                  {copiedPrompt ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                  {copiedPrompt ? "コピーしました" : "コピー"}
                 </Button>
               </CardFooter>
             </Card>
@@ -306,6 +255,7 @@ export function App() {
                 disabled={isSaving || !validation.ok}
                 isSaving={isSaving}
                 onExport={handleExport}
+                size="sm"
               />
             </div>
           </div>
@@ -348,12 +298,27 @@ export function App() {
               disabled={isSaving || !validation.ok}
               isSaving={isSaving}
               onExport={handleExport}
+              size="sm"
             />
           </div>
         </div>
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-4 p-4 lg:grid-cols-[minmax(0,1fr)]">
+        {exportError ? (
+          <Alert variant="destructive">
+            <div className="flex flex-wrap items-center justify-between gap-2 w-full">
+              <div className="flex items-center gap-2">
+                <TriangleAlert className="size-4" />
+                <AlertTitle>エクスポートエラー: {exportError}</AlertTitle>
+              </div>
+              <Button type="button" size="xs" variant="outline" onClick={() => setExportError(null)}>
+                閉じる
+              </Button>
+            </div>
+          </Alert>
+        ) : null}
+
         {mode === "edit" ? (
           <Card className="editor-pane flex min-h-[520px] flex-col">
             <CardContent className="flex min-h-0 flex-1 flex-col pt-4">
@@ -401,97 +366,5 @@ export function App() {
   )
 }
 
-function StepNumber({ value }: { value: string }) {
-  return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-      {value}
-    </span>
-  )
-}
-
-function ValidationPanel({
-  validation,
-}: {
-  validation: PosterValidationResult
-}) {
-  if (validation.ok) {
-    return (
-      <Alert className="mt-3" variant="success">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="size-4" />
-          <AlertTitle>{validation.message}</AlertTitle>
-        </div>
-      </Alert>
-    )
-  }
-
-  return (
-    <Alert className="mt-3" variant="destructive">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <TriangleAlert className="size-4" />
-          <AlertTitle>
-            この修正内容を再度AIに入力してYAML（またはJSON）を作り直させてください。
-          </AlertTitle>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={() =>
-            void navigator.clipboard.writeText(validation.llmMessage)
-          }
-        >
-          <Clipboard />
-          エラーをコピー
-        </Button>
-      </div>
-      <AlertDescription>
-        <pre className="max-h-48 overflow-auto rounded-md bg-background/80 p-2 font-mono text-xs whitespace-pre-wrap text-foreground">
-          {validation.llmMessage}
-        </pre>
-      </AlertDescription>
-    </Alert>
-  )
-}
-
-function ExportDropdown({
-  disabled,
-  isSaving,
-  onExport,
-}: {
-  disabled: boolean
-  isSaving: boolean
-  onExport: (format: ExportFormat) => void
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger type="button" disabled={disabled}>
-        {isSaving ? "保存中" : "出力"}
-        <ChevronDown />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>保存形式</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => void onExport("png")}>
-          <FileImage />
-          PNG
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void onExport("svg")}>
-          <FileImage />
-          SVG
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => void onExport("pdf")}>
-          <Printer />
-          PDF印刷
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => void onExport("html")}>
-          <FileCode2 />
-          Single HTML
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
 
 export default App
