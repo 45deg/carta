@@ -1,6 +1,8 @@
 import "katex/dist/katex.min.css"
+import "highlight.js/styles/github.css"
 
 import ReactMarkdown from "react-markdown"
+import rehypeHighlight from "rehype-highlight"
 import rehypeKatex from "rehype-katex"
 import remarkCjkFriendly from "remark-cjk-friendly"
 import remarkGfm from "remark-gfm"
@@ -15,7 +17,7 @@ export function MarkdownRenderer({ text }: MarkdownRendererProps) {
     <div className="poster-markdown">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath, remarkCjkFriendly]}
-        rehypePlugins={[rehypeKatex]}
+        rehypePlugins={[rehypeKatex, rehypeHighlight]}
       >
         {text}
       </ReactMarkdown>

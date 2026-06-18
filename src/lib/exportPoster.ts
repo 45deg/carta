@@ -4,6 +4,7 @@ import { type Poster } from "@/schema/posterSchema"
 import posterCss from "@/styles/poster.css?raw"
 import { safeFileName } from "@/lib/safeFileName"
 import katexCss from "katex/dist/katex.min.css?raw"
+import highlightCss from "highlight.js/styles/github.css?raw"
 
 function downloadDataUrl(dataUrl: string, fileName: string) {
   const link = document.createElement("a")
@@ -119,6 +120,7 @@ function katexCssWithCdnFonts() {
 function posterCssForHtmlExport() {
   return [
     katexCssWithCdnFonts(),
+    highlightCss,
     posterCss,
     ".poster-root{width:var(--poster-page-width,960px);max-width:none;margin:0;box-shadow:none;}",
   ].join("\n")
