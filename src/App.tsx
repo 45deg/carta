@@ -194,10 +194,10 @@ export function App() {
         <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-4 p-4 sm:p-6">
           <header className="app-chrome flex flex-col gap-1">
             <p className="text-sm font-medium text-muted-foreground">
-              Structured Poster Builder
+              Carta
             </p>
             <h1 className="text-2xl font-semibold tracking-normal">
-              学習用ポスターYAMLを作成
+              構造化知識ポスタージェネレーター
             </h1>
           </header>
 
@@ -265,8 +265,8 @@ export function App() {
   return (
     <main className="min-h-svh bg-muted/40">
       <header className="app-chrome sticky top-0 z-10 border-b bg-background/95 px-4 py-3 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center justify-between gap-2 md:w-auto">
             <div className="flex items-center gap-2">
               <Button
                 type="button"
@@ -291,12 +291,11 @@ export function App() {
               </Tabs>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:hidden">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="md:hidden"
                 onClick={() => setShowSettings(!showSettings)}
               >
                 設定
@@ -342,6 +341,14 @@ export function App() {
                 ))}
               </select>
             </label>
+          </div>
+
+          <div className="hidden md:flex items-center gap-2">
+            <ExportDropdown
+              disabled={isSaving || !validation.ok}
+              isSaving={isSaving}
+              onExport={handleExport}
+            />
           </div>
         </div>
       </header>

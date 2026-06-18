@@ -1,21 +1,43 @@
-# React + TypeScript + Vite + shadcn/ui
+# Carta - 構造化知識ポスタージェネレーター
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+YAMLまたはJSONの構造化データから学習用ポスター（カード）を自動生成するWebアプリケーションです。
+Markdown、数式、ダイアグラム、グラフをサポートしています。
 
-## Adding components
+---
 
-To add components to your app, run the following command:
+## 主な機能
 
-```bash
-npx shadcn@latest add button
-```
+- **プレビューとバリデーション**: YAML/JSONの記述内容をリアルタイムでプレビュー。Zodによるスキーマ検証、およびMermaidの構文エラー検証機能を搭載。
+- **コンテンツ表示**:
+  - **Markdown**: リスト、テーブルなどに対応
+  - **数式**: KaTeXによるLaTeX数式レンダリング
+  - **ダイアグラム**: Mermaid.jsによるフローチャートやシーケンス図
+  - **グラフ**: Vega-Liteによるグラフ表示
+- **AI用プロンプトの提供**: AIにポスターデータを生成させるためのシステムプロンプトを同梱。
+- **エクスポート**: PNG、SVG、PDF、単一HTMLファイル（Single HTML）としてエクスポート可能。
+- **レスポンシブ対応**: デスクトップおよびモバイル環境に対応。
 
-This will place the ui components in the `src/components` directory.
+---
 
-## Using components
+## クイックスタート
 
-To use the components in your app, import them as follows:
+### 動作環境
+- Node.js 18以上推奨
 
-```tsx
-import { Button } from "@/components/ui/button"
-```
+### セットアップ
+
+1. **依存関係のインストール**
+   ```bash
+   npm install
+   ```
+
+2. **開発サーバーの起動**
+   ```bash
+   npm run dev
+   ```
+   ブラウザで `http://localhost:5173` （またはターミナルに表示されたURL）にアクセスします。
+
+3. **ビルド**
+   ```bash
+   npm run build
+   ```
