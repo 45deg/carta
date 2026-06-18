@@ -1,6 +1,7 @@
 import { type CSSProperties, useEffect, useId, useRef, useState } from "react"
 import mermaid from "mermaid"
 import embed, { type VisualizationSpec } from "vega-embed"
+import yaml from "js-yaml"
 
 import { type DiagramBlock as DiagramBlockType } from "@/schema/posterSchema"
 
@@ -49,7 +50,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
 
         const rawSpec =
           typeof block.body === "string"
-            ? (JSON.parse(block.body) as VisualizationSpec)
+            ? (yaml.load(block.body) as VisualizationSpec)
             : (block.body as VisualizationSpec)
         const spec =
           block.format === "vega_lite"
@@ -103,7 +104,7 @@ function formatDiagramBody(body: unknown): string {
     return body
   }
 
-  return JSON.stringify(body, null, 2)
+  return yaml.dump(body)
 }
 
 function formatDiagramWidth(width: number | undefined) {

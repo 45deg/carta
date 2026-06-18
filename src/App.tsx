@@ -10,7 +10,8 @@ import {
   TriangleAlert,
 } from "lucide-react"
 
-import { JsonEditor } from "@/components/JsonEditor"
+import yaml from "js-yaml"
+import { YamlEditor } from "@/components/YamlEditor"
 import { PosterPreview } from "@/components/PosterPreview"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -40,7 +41,7 @@ import {
 } from "@/lib/exportPoster"
 import { PROMPT } from "@/lib/prompt"
 import {
-  parsePosterJson,
+  parsePosterYaml,
   type Poster,
   type PosterValidationResult,
 } from "@/schema/posterSchema"
@@ -107,14 +108,14 @@ const samplePoster: Poster = {
   ],
 }
 
-const initialJson = JSON.stringify(samplePoster, null, 2)
+const initialYaml = yaml.dump(samplePoster, { lineWidth: -1 })
 
 export function App() {
-  const [jsonText, setJsonText] = useState(initialJson)
+  const [yamlText, setYamlText] = useState(initialYaml)
   const [validation, setValidation] = useState<PosterValidationResult>({
     ok: true,
     poster: samplePoster,
-    message: "JSONは有効です。",
+    message: "YAMLは有効です。",
   })
   const [poster, setPoster] = useState<Poster>(samplePoster)
   const [screen, setScreen] = useState<"workflow" | "output">("workflow")
@@ -128,7 +129,7 @@ export function App() {
     let cancelled = false
 
     async function validate() {
-      const result = await parsePosterJson(jsonText)
+      const result = await parsePosterYaml(yamlText)
 
       if (cancelled) {
         return
@@ -146,10 +147,10 @@ export function App() {
     return () => {
       cancelled = true
     }
-  }, [jsonText])
+  }, [yamlText])
 
-  function handleJsonChange(value: string) {
-    setJsonText(value)
+  function handleYamlChange(value: string) {
+    setYamlText(value)
   }
 
   function handleOutput() {
@@ -194,7 +195,7 @@ export function App() {
               Structured Poster Builder
             </p>
             <h1 className="text-2xl font-semibold tracking-normal">
-              学習用ポスターJSONを作成
+              学習用ポスターYAMLを作成
             </h1>
           </header>
 
@@ -203,10 +204,10 @@ export function App() {
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <StepNumber value="1" />
-                  <CardTitle>JSONをAIで作成</CardTitle>
+                  <CardTitle>YAMLをAIで作成</CardTitle>
                 </div>
                 <CardDescription>
-                  以下のプロンプトでGPTs/Skills/Gemsなどを作成し、それに説明させたい対象や資料を提示してJSONを出力させてください。直接プロンプトをチャットに聞いても構いません。
+                  以下のプロンプトでGPTs/Skills/Gemsなどを作成し、それに説明させたい対象や資料を提示してYAMLを出力させてください。直接プロンプトをチャットに聞いても構いません。
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -235,11 +236,11 @@ export function App() {
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <StepNumber value="2" />
-                  <CardTitle>出力されたJSONを貼り付け</CardTitle>
+                  <CardTitle>出力されたYAMLを貼り付け</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="flex min-h-0 flex-1 flex-col">
-                <JsonEditor value={jsonText} onChange={handleJsonChange} />
+                <YamlEditor value={yamlText} onChange={handleYamlChange} />
                 <ValidationPanel validation={validation} />
               </CardContent>
               <CardFooter className="justify-end">
@@ -326,10 +327,10 @@ export function App() {
         {mode === "edit" ? (
           <Card className="editor-pane flex min-h-[520px] flex-col">
             <CardContent className="flex min-h-0 flex-1 flex-col pt-4">
-              <JsonEditor
-                value={jsonText}
-                onChange={handleJsonChange}
-                label="JSON編集"
+              <YamlEditor
+                value={yamlText}
+                onChange={handleYamlChange}
+                label="YAML編集"
               />
               <ValidationPanel validation={validation} />
             </CardContent>
@@ -379,7 +380,7 @@ function ValidationPanel({
         <div className="flex items-center gap-2">
           <TriangleAlert className="size-4" />
           <AlertTitle>
-            この修正内容を再度AIに入力してJSONを作り直させてください。
+            この修正内容を再度AIに入力してYAML（またはJSON）を作り直させてください。
           </AlertTitle>
         </div>
         <Button

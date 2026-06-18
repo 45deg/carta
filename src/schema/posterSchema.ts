@@ -1,5 +1,6 @@
 import { z } from "zod"
 import mermaid from "mermaid"
+import yaml from "js-yaml"
 
 export const posterColors = [
   "red",
@@ -161,11 +162,11 @@ export type PosterValidationResult =
   | { ok: true; poster: Poster; message: string }
   | { ok: false; message: string; llmMessage: string }
 
-export async function parsePosterJson(
+export async function parsePosterYaml(
   source: string
 ): Promise<PosterValidationResult> {
   try {
-    const value: unknown = JSON.parse(source)
+    const value: unknown = yaml.load(source)
     const parsed = posterSchema.safeParse(value)
 
     if (!parsed.success) {
@@ -179,8 +180,8 @@ export async function parsePosterJson(
         ok: false,
         message,
         llmMessage: [
-          "以下のJSONは学習用構造化ポスターのスキーマに合っていません。",
-          "次の検証エラーをすべて修正し、JSONのみを出力してください。",
+          "以下のYAML/JSONは学習用構造化ポスターのスキーマに合っていません。",
+          "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。",
           "",
           message,
           "",
@@ -198,8 +199,8 @@ export async function parsePosterJson(
         ok: false,
         message,
         llmMessage: [
-          "以下のJSONにはMermaid図の構文エラーがあります。",
-          "次の検証エラーをすべて修正し、JSONのみを出力してください。",
+          "以下のYAML/JSONにはMermaid図の構文エラーがあります。",
+          "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。",
           "",
           message,
           "",
@@ -208,18 +209,18 @@ export async function parsePosterJson(
       }
     }
 
-    return { ok: true, poster: parsed.data, message: "JSONは有効です。" }
+    return { ok: true, poster: parsed.data, message: "YAML/JSONは有効です。" }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid JSON"
+    const message = error instanceof Error ? error.message : "Invalid YAML/JSON"
 
     return {
       ok: false,
       message,
       llmMessage: [
-        "以下のJSONはJSON構文として読み取れません。",
-        "構文エラーを修正し、学習用構造化ポスターのJSONのみを出力してください。",
+        "以下のYAML/JSONは構文として読み取れません。",
+        "構文エラーを修正し、学習用構造化ポスターのYAMLまたはJSONのみを出力してください。",
         "",
-        `- JSON parse error: ${message}`,
+        `- YAML/JSON parse error: ${message}`,
       ].join("\n"),
     }
   }

@@ -1,16 +1,16 @@
 import { Textarea } from "@/components/ui/textarea"
 
-type JsonEditorProps = {
+type YamlEditorProps = {
   value: string
   onChange: (value: string) => void
   label?: string
 }
 
-export function JsonEditor({
+export function YamlEditor({
   value,
   onChange,
-  label = "JSON入力",
-}: JsonEditorProps) {
+  label = "YAML入力",
+}: YamlEditorProps) {
   return (
     <label className="flex min-h-0 flex-1 flex-col gap-2">
       <span className="text-sm font-medium">{label}</span>
