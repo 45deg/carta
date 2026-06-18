@@ -123,7 +123,9 @@ export function App() {
   const [baseFontSize, setBaseFontSize] = useState(16)
   const [posterWidth, setPosterWidth] = useState(960)
   const [isSaving, setIsSaving] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const posterRef = useRef<HTMLDivElement>(null)
+  const exportPosterRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -164,7 +166,7 @@ export function App() {
   }
 
   async function handleExport(format: ExportFormat) {
-    const node = posterRef.current
+    const node = exportPosterRef.current
 
     if (!node) {
       return
@@ -173,9 +175,9 @@ export function App() {
     setIsSaving(true)
     try {
       if (format === "png") {
-        await savePosterPng(node, poster)
+        await savePosterPng(node, poster, posterWidth)
       } else if (format === "svg") {
-        await savePosterSvg(node, poster)
+        await savePosterSvg(node, poster, posterWidth)
       } else if (format === "html") {
         savePosterHtml(node, poster)
       } else {
@@ -263,62 +265,83 @@ export function App() {
   return (
     <main className="min-h-svh bg-muted/40">
       <header className="app-chrome sticky top-0 z-10 border-b bg-background/95 px-4 py-3 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setScreen("workflow")}
+        <div className="mx-auto flex max-w-7xl flex-col gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setScreen("workflow")}
+              >
+                <ArrowLeft className="size-4" />
+                <span className="hidden sm:inline">戻る</span>
+              </Button>
+
+              <Tabs
+                value={mode}
+                onValueChange={(value) =>
+                  setMode(value === "edit" ? "edit" : "preview")
+                }
+              >
+                <TabsList className="h-9">
+                  <TabsTrigger value="preview" className="px-3 text-xs sm:text-sm">プレビュー</TabsTrigger>
+                  <TabsTrigger value="edit" className="px-3 text-xs sm:text-sm">編集</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="md:hidden"
+                onClick={() => setShowSettings(!showSettings)}
+              >
+                設定
+                <ChevronDown className={`size-4 transition-transform ${showSettings ? "rotate-180" : ""}`} />
+              </Button>
+
+              <ExportDropdown
+                disabled={isSaving || !validation.ok}
+                isSaving={isSaving}
+                onExport={handleExport}
+              />
+            </div>
+          </div>
+
+          <div
+            className={`${showSettings ? "flex" : "hidden"
+              } md:flex flex-wrap items-center gap-x-6 gap-y-3 border-t md:border-t-0 pt-3 md:pt-0 border-muted mt-1 md:mt-0`}
           >
-            <ArrowLeft />
-            戻る
-          </Button>
+            <label className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Font size</span>
+              <input
+                type="range"
+                min="13"
+                max="22"
+                value={baseFontSize}
+                onChange={(event) => setBaseFontSize(Number(event.target.value))}
+                className="w-24 sm:w-28 accent-primary"
+              />
+              <span className="w-10 tabular-nums">{baseFontSize}px</span>
+            </label>
 
-          <Tabs
-            value={mode}
-            onValueChange={(value) =>
-              setMode(value === "edit" ? "edit" : "preview")
-            }
-          >
-            <TabsList>
-              <TabsTrigger value="preview">プレビュー</TabsTrigger>
-              <TabsTrigger value="edit">編集</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <label className="flex min-w-48 items-center gap-2 text-sm">
-            <span className="font-medium">Font size</span>
-            <input
-              type="range"
-              min="13"
-              max="22"
-              value={baseFontSize}
-              onChange={(event) => setBaseFontSize(Number(event.target.value))}
-              className="w-28 accent-primary"
-            />
-            <span className="w-10 tabular-nums">{baseFontSize}px</span>
-          </label>
-
-          <label className="flex items-center gap-2 text-sm">
-            <span className="font-medium">幅</span>
-            <select
-              value={posterWidth}
-              onChange={(event) => setPosterWidth(Number(event.target.value))}
-              className="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              {posterWidthOptions.map((width) => (
-                <option key={width} value={width}>
-                  {width}px
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <div className="ml-auto flex items-center gap-2">
-            <ExportDropdown
-              disabled={isSaving || !validation.ok}
-              isSaving={isSaving}
-              onExport={handleExport}
-            />
+            <label className="flex items-center gap-2 text-sm">
+              <span className="font-medium">幅</span>
+              <select
+                value={posterWidth}
+                onChange={(event) => setPosterWidth(Number(event.target.value))}
+                className="h-8 rounded-md border border-input bg-background px-2 text-xs shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                {posterWidthOptions.map((width) => (
+                  <option key={width} value={width}>
+                    {width}px
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </div>
       </header>
@@ -345,6 +368,27 @@ export function App() {
             width={posterWidth}
           />
         </section>
+
+        {/* エクスポート用の非表示ポスターコンテナ */}
+        <div
+          className="no-print"
+          style={{
+            position: "fixed",
+            left: "-9999px",
+            top: "0",
+            width: `${posterWidth}px`,
+            pointerEvents: "none",
+            opacity: 0,
+            background: "#ffffff",
+          }}
+        >
+          <PosterPreview
+            ref={exportPosterRef}
+            poster={poster}
+            baseFontSize={baseFontSize}
+            width={posterWidth}
+          />
+        </div>
       </div>
     </main>
   )

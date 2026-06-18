@@ -23,8 +23,8 @@ function downloadText(text: string, fileName: string, type: string) {
   downloadBlob(blob, fileName)
 }
 
-export async function savePosterPng(node: HTMLElement, poster: Poster) {
-  const dataUrl = await exportPosterImage(node, (exportNode, options) => {
+export async function savePosterPng(node: HTMLElement, poster: Poster, targetWidth: number) {
+  const dataUrl = await exportPosterImage(node, targetWidth, (exportNode, options) => {
     return toPng(exportNode, {
       ...options,
       pixelRatio: 2,
@@ -33,8 +33,8 @@ export async function savePosterPng(node: HTMLElement, poster: Poster) {
   downloadDataUrl(dataUrl, safeFileName(poster.title, "png"))
 }
 
-export async function savePosterSvg(node: HTMLElement, poster: Poster) {
-  const dataUrl = await exportPosterImage(node, toSvg)
+export async function savePosterSvg(node: HTMLElement, poster: Poster, targetWidth: number) {
+  const dataUrl = await exportPosterImage(node, targetWidth, toSvg)
   const svgText = await dataUrlToText(dataUrl)
   downloadBlob(
     new Blob([svgText], { type: "image/svg+xml;charset=utf-8" }),
@@ -44,6 +44,7 @@ export async function savePosterSvg(node: HTMLElement, poster: Poster) {
 
 async function exportPosterImage(
   node: HTMLElement,
+  targetWidth: number,
   render: (
     exportNode: HTMLElement,
     options: {
@@ -58,10 +59,10 @@ async function exportPosterImage(
     }
   ) => Promise<string>
 ) {
-  const rect = node.getBoundingClientRect()
-  const width = Math.ceil(rect.width)
-  const height = Math.ceil(rect.height)
   const fontEmbedCSS = await getFontEmbedCSS(node)
+  const rect = node.getBoundingClientRect()
+  const width = targetWidth
+  const height = Math.ceil(rect.height || node.offsetHeight || node.scrollHeight || 600)
   const exportNode = node.cloneNode(true) as HTMLElement
 
   exportNode.style.width = `${width}px`

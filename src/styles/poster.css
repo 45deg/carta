@@ -102,16 +102,16 @@
   padding: 0.55rem 1.15rem 1.05rem;
 }
 
-.poster-card-body > * {
+.poster-card-body>* {
   min-width: 0;
   max-width: 100%;
 }
 
-.poster-markdown > *:first-child {
+.poster-markdown>*:first-child {
   margin-top: 0;
 }
 
-.poster-markdown > *:last-child {
+.poster-markdown>*:last-child {
   margin-bottom: 0;
 }
 
@@ -165,7 +165,7 @@
   overflow-wrap: anywhere;
 }
 
-.poster-markdown li > p {
+.poster-markdown li>p {
   display: contents;
 }
 
@@ -199,7 +199,7 @@
   text-align: center;
 }
 
-.poster-markdown .katex-display > .katex {
+.poster-markdown .katex-display>.katex {
   display: inline-block;
   text-align: initial;
 }
@@ -237,7 +237,7 @@
   align-items: stretch;
 }
 
-.poster-columns > * {
+.poster-columns>* {
   min-width: 0;
   height: 100%;
 }
@@ -291,7 +291,7 @@
 }
 
 .poster-diagram[data-format="vega_lite"] .vega-embed,
-.poster-diagram[data-format="vega_lite"] .vega-embed > svg {
+.poster-diagram[data-format="vega_lite"] .vega-embed>svg {
   width: 100%;
   max-width: 100%;
 }
