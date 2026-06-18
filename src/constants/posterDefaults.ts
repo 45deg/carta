@@ -89,6 +89,9 @@ export const samplePoster: Poster = {
                 field: "algorithm",
                 type: "nominal",
                 title: "アルゴリズム",
+                legend: {
+                  orient: "bottom"
+                },
                 scale: {
                   domain: [
                     "Bubble Sort (O(n²))",
