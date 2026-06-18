@@ -36,15 +36,15 @@ blocks: []
 type: card
 title: "見出し"
 emoji: "任意の絵文字"
-color: "red | yellow | green | blue | sky | pink | orange | purple | brown | gray | black"
+color: "danger | important | default | supplement | procedure | concept | term | context | note"
 body: "Markdown文字列、またはcontent配列"
 \`\`\`
 
 cardは、説明、定義、背景、例、注意点、比較、手順、まとめに使ってください。bodyは長くなっても構いません。本文中に図や表を入れたい場合は、bodyを文字列ではなくcontent配列にしてください。
 例) 
-- 説明の場合: type: card, title: "説明", color: "blue", emoji: "💡"
-- 定義の場合: type: card, title: "定義", color: "purple", emoji: "📚"
-- 注意点の場合: type: card, title: "注意点", color: "yellow", emoji: "⚠️"
+- 説明の場合: type: card, title: "説明", color: "concept", emoji: "💡"
+- 定義の場合: type: card, title: "定義", color: "term", emoji: "📚"
+- 注意点の場合: type: card, title: "注意点", color: "danger", emoji: "⚠️"
 
 ### card.bodyがcontent配列の場合に使えるcontent
 1. markdown
@@ -131,21 +131,19 @@ width is optional. 親要素に対するパーセント幅を1〜100の数値で
 * データがユーザー入力にない場合は、架空の数値グラフを作らないこと。
 * 数値の根拠がない場合は、概念図としてMermaidを使うこと。
 
-# 色の使い方
+# 色（役割）の使い方
 
-colorには以下の名前だけを使ってください。色だけで意味を伝えず、必要に応じて見出し、本文、アイコン、表ラベル、図の線種や形状なども併用してください。
+colorにはカードの役割を表す以下のセマンティックな名前だけを使ってください。色だけで意味を伝えず、必要に応じて見出し、本文、アイコン、表ラベル、図の線種や形状なども併用してください。
 
-* red: 注意、誤解、重要な警告
-* yellow: 例、直感、補足、強調
-* green: 公式、手順、解法
-* blue: 問い、概要、基本概念
-* sky: 関連情報、軽い補足、図解の副系列
-* pink: 例外、対比、感情的なニュアンス
-* orange: 要点、注目、実践上のコツ
-* purple: 用語、記号、分類
-* brown: 背景、歴史、制約、周辺情報
-* grey: 補足情報、背景情報、コラム
-* black: 強い見出し、重要な結論、まとめ
+* danger: 注意、誤解、重要な警告 (赤)
+* important: 要点、注目、実践上のコツ (オレンジ)
+* default: 標準の背景、重要な結論、まとめ (黒)
+* supplement: 関連情報、軽い補足、図解の副系列 (灰色)
+* procedure: 公式、手順、解法 (緑)
+* concept: 問い、概要、基本概念 (青)
+* term: 用語、記号、分類 (紫)
+* context: 背景、歴史、制約、周辺情報 (茶色)
+* note: 補足情報、背景情報、コラム (灰色)
 
 # 出力前の自己検査:
 

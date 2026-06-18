@@ -17,23 +17,21 @@ const posterColorMap: Record<
   PosterColor,
   { hex: string; kind: PosterColorKind }
 > = {
-  red: { hex: "#FF4B00", kind: "accent" },
-  yellow: { hex: "#FFF100", kind: "accent" },
-  green: { hex: "#03AF7A", kind: "accent" },
-  blue: { hex: "#005AFF", kind: "accent" },
-  sky: { hex: "#4DC4FF", kind: "accent" },
-  pink: { hex: "#FF8082", kind: "accent" },
-  orange: { hex: "#F6AA00", kind: "accent" },
-  purple: { hex: "#990099", kind: "accent" },
-  brown: { hex: "#804000", kind: "accent" },
-  white: { hex: "#FFFFFF", kind: "neutral" },
-  "light gray": { hex: "#F3F4F6", kind: "neutral" },
-  gray: { hex: "#84919E", kind: "neutral" },
-  black: { hex: "#000000", kind: "neutral" },
+  danger: { hex: "#C92A2A", kind: "accent" },
+  important: { hex: "#C2410C", kind: "accent" },
+  default: { hex: "#171717", kind: "neutral" },
+  supplement: { hex: "#4B5563", kind: "neutral" },
+  procedure: { hex: "#15803D", kind: "accent" },
+  concept: { hex: "#1D4ED8", kind: "accent" },
+  term: { hex: "#6B21A8", kind: "accent" },
+  context: { hex: "#5C2D16", kind: "accent" },
+  note: { hex: "#4B5563", kind: "neutral" },
 }
 
 export function CardBlock({ block }: CardBlockProps) {
-  const color = posterColorMap[block.color ?? "blue"]
+  const color = (block.color && posterColorMap[block.color])
+    ? posterColorMap[block.color]
+    : posterColorMap["default"]
   const style = {
     "--poster-card-color": color.hex,
     "--poster-card-kind": color.kind,
@@ -46,7 +44,7 @@ export function CardBlock({ block }: CardBlockProps) {
   return (
     <section
       className="poster-card"
-      data-color={block.color ?? "blue"}
+      data-color={(block.color && posterColorMap[block.color]) ? block.color : "default"}
       style={style}
     >
       <div className="poster-card-heading">

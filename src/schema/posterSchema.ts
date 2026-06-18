@@ -3,19 +3,15 @@ import mermaid from "mermaid"
 import yaml from "js-yaml"
 
 export const posterColors = [
-  "red",
-  "yellow",
-  "green",
-  "blue",
-  "sky",
-  "pink",
-  "orange",
-  "purple",
-  "brown",
-  "white",
-  "light gray",
-  "gray",
-  "black",
+  "danger",
+  "important",
+  "default",
+  "supplement",
+  "procedure",
+  "concept",
+  "term",
+  "context",
+  "note",
 ] as const
 
 export const diagramFormats = ["mermaid", "vega_lite"] as const

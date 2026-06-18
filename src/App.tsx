@@ -59,7 +59,7 @@ const samplePoster: Poster = {
       type: "card",
       title: "要点",
       emoji: "💡",
-      color: "sky",
+      color: "important",
       body: "再帰は **小さな同型問題** に分けて解く考え方です。\n\n| 観点 | 確認すること |\n|---|---|\n| 終了条件 | いつ止まるか |\n| 再帰ステップ | どのように小さくするか |\n| 結合 | 答えをどう戻すか |\n\n数式も扱えます。\n\n$$\nT(n)=2T(n/2)+O(n)\n$$",
     },
     {
@@ -70,7 +70,7 @@ const samplePoster: Poster = {
           type: "card",
           title: "手順",
           emoji: "1",
-          color: "green",
+          color: "procedure",
           body: "1. 問題を観察する\n2. 最小ケースを決める\n3. 小さい問題へ変換する\n4. 戻り値を組み立てる",
         },
         {
