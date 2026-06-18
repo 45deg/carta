@@ -1,0 +1,121 @@
+import { test, expect } from "@playwright/test"
+import * as fs from "fs"
+
+test.describe("Poster Card Generator E2E", () => {
+  test.beforeEach(async ({ page }) => {
+    // Navigate to the app before each test
+    await page.goto("/")
+  })
+
+  test("loads the application and displays the main heading", async ({ page }) => {
+    await expect(page.locator("h1")).toContainText("構造化知識ポスタージェネレーター")
+  })
+
+  test("can navigate to output screen and back to workflow", async ({ page }) => {
+    // 1. Initial screen should have Step 1 & Step 2 headers visible
+    await expect(page.locator("text=YAMLをAIで作成")).toBeVisible()
+    
+    // 2. Click the "出力" button in the workflow card footer
+    const outputBtn = page.getByRole("button", { name: "出力", exact: true })
+    await expect(outputBtn).toBeEnabled()
+    await outputBtn.click()
+
+    // 3. We should now be in the output screen. Verify the "戻る" button is visible
+    const backBtn = page.getByRole("button", { name: "戻る" })
+    await expect(backBtn).toBeVisible()
+
+    // 4. Click the "戻る" button and verify we are back to the initial screen
+    await backBtn.click()
+    await expect(page.locator("text=YAMLをAIで作成")).toBeVisible()
+  })
+
+  test("verifies rendering and downloads for each format", async ({ page }) => {
+    // 1. Stub window.print() on the currently loaded page to test PDF printing
+    await page.evaluate(() => {
+      (window as any).__printed = false;
+      window.print = () => {
+        (window as any).__printed = true;
+      };
+    })
+
+    // 2. Click the "出力" button to go to the output screen
+    await page.getByRole("button", { name: "出力", exact: true }).click()
+
+    // 3. Verify that the poster preview renders on screen
+    const posterPreview = page.locator(".poster-print-stage")
+    await expect(posterPreview).toBeVisible()
+
+    // 4. Locate the Export dropdown in the header and click it to open
+    const headerExportBtn = page.locator("header.app-chrome").getByRole("button", { name: "出力" })
+    await expect(headerExportBtn).toBeVisible()
+    await headerExportBtn.click()
+
+    // Verify dropdown menu opened and save options are visible
+    await expect(page.locator("text=保存形式")).toBeVisible()
+
+    // --- Test PNG Download ---
+    const pngDownloadPromise = page.waitForEvent("download")
+    await page.getByRole("menuitem").filter({ hasText: "PNG" }).click()
+    const pngDownload = await pngDownloadPromise
+    expect(pngDownload.suggestedFilename()).toContain(".png")
+
+    // Test PNG file contents
+    const pngPath = await pngDownload.path()
+    expect(pngPath).not.toBeNull()
+    const pngStats = fs.statSync(pngPath!)
+    expect(pngStats.size).toBeGreaterThan(1024) // Assert PNG is non-empty and reasonably sized
+
+    // Wait for the dropdown menu to completely close before clicking again
+    await expect(page.locator("text=保存形式")).not.toBeVisible()
+
+    // Re-open the export dropdown for the next format
+    await headerExportBtn.click()
+    await expect(page.locator("text=保存形式")).toBeVisible()
+
+    // --- Test SVG Download ---
+    const svgDownloadPromise = page.waitForEvent("download")
+    await page.getByRole("menuitem").filter({ hasText: "SVG" }).click()
+    const svgDownload = await svgDownloadPromise
+    expect(svgDownload.suggestedFilename()).toContain(".svg")
+
+    // Test SVG file contents
+    const svgPath = await svgDownload.path()
+    expect(svgPath).not.toBeNull()
+    const svgContent = fs.readFileSync(svgPath!, "utf8")
+    expect(svgContent).toContain("<svg")
+    expect(svgContent).toContain("アルゴリズム設計") // Title of default poster should be embedded in the SVG
+
+    // Wait for the dropdown menu to completely close before clicking again
+    await expect(page.locator("text=保存形式")).not.toBeVisible()
+
+    // Re-open the export dropdown for the next format
+    await headerExportBtn.click()
+    await expect(page.locator("text=保存形式")).toBeVisible()
+
+    // --- Test HTML Download ---
+    const htmlDownloadPromise = page.waitForEvent("download")
+    await page.getByRole("menuitem").filter({ hasText: "Single HTML" }).click()
+    const htmlDownload = await htmlDownloadPromise
+    expect(htmlDownload.suggestedFilename()).toContain(".html")
+
+    // Test HTML file contents
+    const htmlPath = await htmlDownload.path()
+    expect(htmlPath).not.toBeNull()
+    const htmlContent = fs.readFileSync(htmlPath!, "utf8")
+    expect(htmlContent).toContain("<!doctype html>")
+    expect(htmlContent).toContain("<title>アルゴリズム設計：分割統治法と計算量</title>")
+    expect(htmlContent).toContain("アルゴリズム設計：分割統治法と計算量")
+
+    // Wait for the dropdown menu to completely close before clicking again
+    await expect(page.locator("text=保存形式")).not.toBeVisible()
+
+    // Re-open the export dropdown for the next format
+    await headerExportBtn.click()
+    await expect(page.locator("text=保存形式")).toBeVisible()
+
+    // --- Test PDF Print ---
+    await page.getByRole("menuitem").filter({ hasText: "PDF印刷" }).click()
+    const printed = await page.evaluate(() => (window as any).__printed)
+    expect(printed).toBe(true)
+  })
+})
