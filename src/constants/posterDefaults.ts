@@ -15,7 +15,7 @@ export const posterWidthOptions = [
   { label: "小", value: "small", width: 840 },
 ] as const
 
-export const samplePoster: Poster = {
+export const samplePosterJa: Poster = {
   title: "分割統治法：構造・手順・計算量",
   description:
     "大きな問題を小さな部分問題へ分けて解く分割統治法について、基本構造、マージソートの流れ、再帰方程式の読み方、実装時の注意点を整理した学習用ポスターです。",
@@ -214,3 +214,205 @@ export const samplePoster: Poster = {
     },
   ],
 }
+
+export const samplePosterEn: Poster = {
+  title: "Divide and Conquer: Structure, Process, and Complexity",
+  description:
+    "A learning poster detailing the basic structure of the divide-and-conquer paradigm, the flow of merge sort, how to read recurrence equations, and implementation pitfalls.",
+  blocks: [
+    {
+      type: "card",
+      title: "Core Concept",
+      emoji: "💡",
+      icon: "lightbulb",
+      color: "concept",
+      body: [
+        {
+          type: "markdown",
+          text: "Divide and conquer is an algorithm design paradigm that recursively breaks a problem down into **two or more sub-problems of the same type**, solves them directly when simple enough, and combines the solutions to solve the original problem.",
+        },
+        {
+          type: "flow",
+          variant: "steps",
+          direction: "horizontal",
+          items: [
+            {
+              title: "Divide",
+              body: "Break the problem into sub-problems of the same type.",
+            },
+            {
+              title: "Conquer",
+              body: "Solve sub-problems recursively. If small enough, solve directly.",
+            },
+            {
+              title: "Combine",
+              body: "Merge the sub-problem solutions to build the final answer.",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "columns",
+      size: [2, 1],
+      columns: [
+        {
+          type: "card",
+          title: "Merge Sort in Action",
+          emoji: "⚙️",
+          icon: "settings",
+          color: "procedure",
+          body: [
+            {
+              type: "markdown",
+              text: "Merge sort is a classic example of divide and conquer. It splits an array in half, sorts each half recursively, and merges the sorted halves.",
+            },
+            {
+              type: "layout",
+              variant: "side_by_side",
+              size: [1.1, 0.9],
+              columns: [
+                [
+                  {
+                    type: "flow",
+                    variant: "timeline",
+                    direction: "vertical",
+                    items: [
+                      {
+                        title: "Divide",
+                        body: "Split `[5, 2, 4, 7]` into `[5, 2]` and `[4, 7]`.",
+                      },
+                      {
+                        title: "Base Case",
+                        body: "Stop dividing when size is 1; single elements are sorted.",
+                      },
+                      {
+                        title: "Combine",
+                        body: "Merge sub-arrays in sorted order to get `[2, 4, 5, 7]`.",
+                      },
+                    ],
+                  },
+                ],
+                [
+                  {
+                    type: "list",
+                    title: "Properties",
+                    variant: "definitions",
+                    items: [
+                      {
+                        term: "Time Complexity",
+                        body: "$O(n \\log n)$ in worst, average, and best cases.",
+                      },
+                      {
+                        term: "Space Complexity",
+                        body: "$O(n)$ auxiliary space required for merging.",
+                      },
+                      {
+                        term: "Stability",
+                        body: "A stable sort that preserves relative order of equal keys.",
+                      },
+                    ],
+                  },
+                ],
+              ],
+            },
+          ],
+        },
+        {
+          type: "diagram",
+          format: "mermaid",
+          title: "Overall Flow of Divide & Combine",
+          body: "flowchart TD\n  A[\"[5, 2, 4, 7]\"] --> B1[\"[5, 2]\"]\n  A --> B2[\"[4, 7]\"]\n  B1 --> C1[\"[5]\"]\n  B1 --> C2[\"[2]\"]\n  B2 --> C3[\"[4]\"]\n  B2 --> C4[\"[7]\"]\n  C1 --> D1[\"[2, 5]\"]\n  C2 --> D1\n  C3 --> D2[\"[4, 7]\"]\n  C4 --> D2\n  D1 --> E[\"[2, 4, 5, 7]\"]\n  D2 --> E",
+          caption:
+            "Divide until array sizes are 1, then combine sorted sub-arrays bottom-up.",
+        },
+      ],
+    },
+    {
+      type: "card",
+      title: "Reading Recurrence Equations",
+      emoji: "📘",
+      icon: "book-open",
+      color: "term",
+      body: [
+        {
+          type: "markdown",
+          text: "The time complexity of divide and conquer is expressed as $T(n) = aT(n/b) + f(n)$. For merge sort, it is $T(n) = 2T(n/2) + O(n)$.",
+        },
+        {
+          type: "layout",
+          variant: "aside",
+          columns: [
+            [
+              {
+                type: "list",
+                variant: "definitions",
+                items: [
+                  {
+                    term: "$a$",
+                    body: "Number of sub-problems. 2 for merge sort.",
+                  },
+                  {
+                    term: "$b$",
+                    body: "Problem reduction ratio. 2 for merge sort.",
+                  },
+                  {
+                    term: "$f(n)$",
+                    body: "Cost of division and combining outside the recursion.",
+                  },
+                ],
+              },
+            ],
+            [
+              {
+                type: "markdown",
+                text: "**Intuition**  \nAt each level of the recursion tree, we merge all elements once with cost $O(n)$, and there are $\\log n$ levels. Thus, the total complexity is $O(n \\log n)$.",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      type: "flow",
+      title: "Implementation Verification Steps",
+      variant: "steps",
+      direction: "horizontal",
+      items: [
+        {
+          title: "Base Case",
+          body: "Ensure a valid stop condition exists for small inputs to prevent infinite recursion.",
+        },
+        {
+          title: "Division Validity",
+          body: "Confirm that sub-problems have the exact same structure as the main problem.",
+        },
+        {
+          title: "Combination Correctness",
+          body: "Verify that combining sub-solutions does not drop any information.",
+        },
+      ],
+    },
+    {
+      type: "list",
+      title: "Common Pitfalls",
+      variant: "checklist",
+      items: [
+        {
+          body: "Weak base case, leading to stack overflow / infinite recursion.",
+          checked: true,
+        },
+        {
+          body: "Overlapping sub-problems, increasing time complexity beyond expectations.",
+          checked: true,
+        },
+        {
+          body: "Ignoring division/combination cost when estimating overall complexity.",
+          checked: true,
+        },
+      ],
+    },
+  ],
+}
+
+export const samplePoster = samplePosterJa

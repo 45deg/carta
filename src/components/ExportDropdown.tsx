@@ -1,5 +1,6 @@
 import { type ReactNode } from "react"
 import { ChevronDown, FileCode2, FileImage, Printer } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import {
   DropdownMenu,
@@ -32,6 +33,8 @@ export function ExportDropdown({
   icon,
   className,
 }: ExportDropdownProps) {
+  const { t } = useTranslation()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -42,11 +45,11 @@ export function ExportDropdown({
         className={cn(className)}
       >
         {icon}
-        {isSaving ? "保存中" : "出力"}
+        {isSaving ? t("export.saving") : t("export.export")}
         <ChevronDown className="size-4 opacity-50" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>保存形式</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("export.formatTitle")}</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => void onExport("png")}>
           <FileImage />
           PNG
@@ -58,13 +61,14 @@ export function ExportDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => void onExport("pdf")}>
           <Printer />
-          PDF印刷
+          {t("export.optionPdf")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void onExport("html")}>
           <FileCode2 />
-          Single HTML
+          {t("export.optionHtml")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
+

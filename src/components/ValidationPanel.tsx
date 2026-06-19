@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { CheckCircle2, Clipboard, TriangleAlert } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,7 @@ type ValidationPanelProps = {
 
 export function ValidationPanel({ validation }: ValidationPanelProps) {
   const [copied, setCopied] = useState(false)
+  const { t } = useTranslation()
 
   async function handleCopy() {
     if (validation.ok) {
@@ -42,7 +44,7 @@ export function ValidationPanel({ validation }: ValidationPanelProps) {
         <div className="flex items-center gap-2">
           <TriangleAlert className="size-4" />
           <AlertTitle>
-            この修正内容を再度AIに入力してYAML（またはJSON）を作り直させてください。
+            {t("validation.errorTitle")}
           </AlertTitle>
         </div>
         <Button
@@ -52,7 +54,7 @@ export function ValidationPanel({ validation }: ValidationPanelProps) {
           onClick={handleCopy}
         >
           {copied ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
-          {copied ? "コピーしました" : "エラーをコピー"}
+          {copied ? t("validation.copiedError") : t("validation.copyError")}
         </Button>
       </div>
       <AlertDescription>
@@ -63,3 +65,4 @@ export function ValidationPanel({ validation }: ValidationPanelProps) {
     </Alert>
   )
 }
+

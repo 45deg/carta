@@ -1,5 +1,6 @@
 import { z } from "zod"
 import yaml from "js-yaml"
+import i18n from "i18next"
 
 export const posterColors = [
   "danger",
@@ -255,12 +256,8 @@ export async function parsePosterYaml(
         ok: false,
         message,
         llmMessage: [
-          "以下のYAML/JSONは学習用構造化ポスターのスキーマに合っていません。",
-          "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。",
-          "",
-          message,
-          "",
-          "注意: blocks は1件以上、columns.columns は再帰的な Block 配列、card.body の layout.columns は content 配列、type/color/format/variant は定義済みの値だけを使ってください。",
+          i18n.t("validation.invalidSchemaPrefix"),
+          i18n.t("validation.invalidSchemaSuffix", { message }),
         ].join("\n"),
       }
     }
@@ -274,17 +271,13 @@ export async function parsePosterYaml(
         ok: false,
         message,
         llmMessage: [
-          "以下のYAML/JSONにはMermaid図の構文エラーがあります。",
-          "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。",
-          "",
-          message,
-          "",
-          "注意: MermaidのbodyにはMermaidコードのみを書き、Markdownコードフェンスや説明文を含めないでください。",
+          i18n.t("validation.mermaidErrorPrefix"),
+          i18n.t("validation.mermaidErrorSuffix", { message }),
         ].join("\n"),
       }
     }
 
-    return { ok: true, poster: parsed.data, message: "YAML/JSONは有効です。" }
+    return { ok: true, poster: parsed.data, message: i18n.t("validation.success") }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Invalid YAML/JSON"
 
@@ -292,10 +285,8 @@ export async function parsePosterYaml(
       ok: false,
       message,
       llmMessage: [
-        "以下のYAML/JSONは構文として読み取れません。",
-        "構文エラーを修正し、学習用構造化ポスターのYAMLまたはJSONのみを出力してください。",
-        "",
-        `- YAML/JSON parse error: ${message}`,
+        i18n.t("validation.parseErrorPrefix"),
+        i18n.t("validation.parseErrorSuffix", { message }),
       ].join("\n"),
     }
   }

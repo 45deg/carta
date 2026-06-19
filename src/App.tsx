@@ -9,6 +9,7 @@ import {
   GlobeOff,
   TriangleAlert,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import yaml from "js-yaml"
 import { YamlEditor } from "@/components/YamlEditor"
@@ -28,7 +29,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { PROMPT } from "@/lib/prompt"
+import { PROMPT_JA, PROMPT_EN } from "@/lib/prompt"
 import {
   parsePosterYaml,
   type Poster,
@@ -37,10 +38,10 @@ import {
 import {
   posterFontSizeOptions,
   posterWidthOptions,
-  samplePoster,
+  samplePosterJa,
+  samplePosterEn,
 } from "@/constants/posterDefaults"
 
-const initialYaml = yaml.dump(samplePoster, { lineWidth: -1 })
 type PosterFontSizeValue = (typeof posterFontSizeOptions)[number]["value"]
 type PosterWidthValue = (typeof posterWidthOptions)[number]["value"]
 
@@ -53,13 +54,20 @@ const PosterPreview = lazy(() =>
 )
 
 export function App() {
-  const [yamlText, setYamlText] = useState(initialYaml)
-  const [validation, setValidation] = useState<PosterValidationResult>({
+  const { t, i18n } = useTranslation()
+  const isEnglish = i18n.language?.startsWith("en")
+  const activeSamplePoster = isEnglish ? samplePosterEn : samplePosterJa
+  const activePrompt = isEnglish ? PROMPT_EN : PROMPT_JA
+
+  const [yamlText, setYamlText] = useState(() =>
+    yaml.dump(activeSamplePoster, { lineWidth: -1 })
+  )
+  const [validation, setValidation] = useState<PosterValidationResult>(() => ({
     ok: true,
-    poster: samplePoster,
-    message: "YAMLは有効です。",
-  })
-  const [poster, setPoster] = useState<Poster>(samplePoster)
+    poster: activeSamplePoster,
+    message: t("validation.success"),
+  }))
+  const [poster, setPoster] = useState<Poster>(() => activeSamplePoster)
   const [screen, setScreen] = useState<"workflow" | "output">("workflow")
   const [mode, setMode] = useState<"preview" | "edit">("preview")
   const [fontSizeValue, setFontSizeValue] =
@@ -103,7 +111,7 @@ export function App() {
     return () => {
       cancelled = true
     }
-  }, [yamlText])
+  }, [yamlText, i18n.language])
 
   function handleYamlChange(value: string) {
     setYamlText(value)
@@ -121,7 +129,7 @@ export function App() {
 
   async function handleCopyPrompt() {
     try {
-      await navigator.clipboard.writeText(PROMPT)
+      await navigator.clipboard.writeText(activePrompt)
       setCopiedPrompt(true)
       setTimeout(() => setCopiedPrompt(false), 2000)
     } catch {
@@ -167,11 +175,24 @@ export function App() {
       setExportError(
         err instanceof Error
           ? err.message
-          : "エクスポート中にエラーが発生しました。"
+          : t("output.exportErrorDefault")
       )
     } finally {
       setIsSaving(false)
     }
+  }
+
+  function handleLanguageChange(lang: string) {
+    const currentJaYaml = yaml.dump(samplePosterJa, { lineWidth: -1 })
+    const currentEnYaml = yaml.dump(samplePosterEn, { lineWidth: -1 })
+    const cleanText = yamlText.trim().replace(/\r\n/g, "\n")
+    const cleanJa = currentJaYaml.trim().replace(/\r\n/g, "\n")
+    const cleanEn = currentEnYaml.trim().replace(/\r\n/g, "\n")
+
+    if (cleanText === cleanJa || cleanText === cleanEn) {
+      setYamlText(yaml.dump(lang === "en" ? samplePosterEn : samplePosterJa, { lineWidth: -1 }))
+    }
+    void i18n.changeLanguage(lang)
   }
 
   if (screen === "workflow") {
@@ -180,7 +201,7 @@ export function App() {
         <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col gap-6 p-6 sm:p-8">
           <header className="app-chrome flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4">
             <div className="flex flex-col gap-2">
-              <p className="text-base font-medium text-muted-foreground">構造化知識ポスタージェネレーター</p>
+              <p className="text-base font-medium text-muted-foreground">{t("app.title")}</p>
               <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
                 <svg className="size-8 text-primary" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3.5" y="4.5" width="18" height="23" rx="3" transform="rotate(-12 12.5 16)" fill="currentColor" opacity="0.4" stroke="currentColor" stroke-width="1.5" />
@@ -192,11 +213,26 @@ export function App() {
                 Carta
               </h1>
             </div>
-            <div className="flex items-center gap-2 mt-2 md:mt-0">
+            <div className="flex flex-wrap items-center gap-3 mt-2 md:mt-0">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 border border-emerald-200/60 shadow-2xs dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50">
                 <GlobeOff className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                ローカル処理・データ送信なし
+                {t("app.localOnly")}
               </span>
+              <ToggleGroup
+                type="single"
+                value={i18n.resolvedLanguage || i18n.language}
+                onValueChange={(val) => {
+                  if (val) handleLanguageChange(val)
+                }}
+                className="h-8 p-0.5 rounded-lg border bg-background"
+              >
+                <ToggleGroupItem value="ja" className="h-6 px-2.5 text-xs rounded-md">
+                  日本語
+                </ToggleGroupItem>
+                <ToggleGroupItem value="en" className="h-6 px-2.5 text-xs rounded-md">
+                  English
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
           </header>
 
@@ -205,17 +241,17 @@ export function App() {
               <CardHeader className="p-6 sm:p-8 pb-4">
                 <div className="flex items-center gap-4">
                   <StepNumber value="1" />
-                  <CardTitle className="text-xl font-bold">YAMLをAIで作成</CardTitle>
+                  <CardTitle className="text-xl font-bold">{t("step1.title")}</CardTitle>
                 </div>
                 <CardDescription className="text-base leading-relaxed mt-3">
-                  以下のプロンプトでGPTs/Skills/Gemsなどを作成し、それに説明させたい対象や資料を提示してYAMLを出力させてください。直接プロンプトをチャットに聞いても構いません。
+                  {t("step1.desc")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-6 sm:px-8 pb-6 flex-1 flex flex-col">
                 <label className="flex flex-col gap-3 flex-1">
-                  <span className="text-base font-medium">Prompt</span>
+                  <span className="text-base font-medium">{t("step1.prompt")}</span>
                   <Textarea
-                    value={PROMPT}
+                    value={activePrompt}
                     readOnly
                     className="min-h-96 resize-none bg-muted/50 font-mono text-sm leading-relaxed p-4 rounded-xl border-muted/80"
                   />
@@ -233,7 +269,7 @@ export function App() {
                   ) : (
                     <Clipboard className="size-4" />
                   )}
-                  {copiedPrompt ? "コピーしました" : "コピー"}
+                  {copiedPrompt ? t("step1.copied") : t("step1.copy")}
                 </Button>
               </CardFooter>
             </Card>
@@ -242,7 +278,7 @@ export function App() {
               <CardHeader className="p-6 sm:p-8 pb-4">
                 <div className="flex items-center gap-4">
                   <StepNumber value="2" />
-                  <CardTitle className="text-xl font-bold">出力されたYAMLを貼り付け</CardTitle>
+                  <CardTitle className="text-xl font-bold">{t("step2.title")}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="flex min-h-0 flex-1 flex-col px-6 sm:px-8 pb-6 gap-4">
@@ -258,7 +294,7 @@ export function App() {
                   onClick={handleOutput}
                 >
                   <Eye className="size-5" />
-                  出力
+                  {t("step2.render")}
                 </Button>
               </CardFooter>
             </Card>
@@ -282,7 +318,7 @@ export function App() {
                 onClick={() => setScreen("workflow")}
               >
                 <ArrowLeft className="size-4" />
-                <span className="hidden sm:inline">戻る</span>
+                <span className="hidden sm:inline">{t("output.back")}</span>
               </Button>
 
               <Tabs
@@ -296,13 +332,13 @@ export function App() {
                     value="preview"
                     className="h-8 px-4 text-sm rounded-lg"
                   >
-                    プレビュー
+                    {t("output.preview")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="edit"
                     className="h-8 px-4 text-sm rounded-lg"
                   >
-                    編集
+                    {t("output.edit")}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -316,7 +352,7 @@ export function App() {
                 className="h-10 px-4 text-sm gap-2"
                 onClick={() => setShowSettings(!showSettings)}
               >
-                設定
+                {t("output.settings")}
                 <ChevronDown
                   className={`size-4 transition-transform ${showSettings ? "rotate-180" : ""}`}
                 />
@@ -339,7 +375,7 @@ export function App() {
             } mt-1 flex-wrap items-center gap-x-6 gap-y-3 border-t border-muted pt-3 md:mt-0 md:flex md:border-t-0 md:pt-0`}
           >
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium">Font size</span>
+              <span className="font-medium">{t("output.fontSize")}</span>
               <ToggleGroup
                 aria-label="Font size"
                 className="h-10 p-1 rounded-xl"
@@ -359,7 +395,7 @@ export function App() {
                     value={option.value}
                     size="sm"
                     className="h-8 min-w-9 px-3 text-sm rounded-lg"
-                    aria-label={`文字サイズ ${option.label}`}
+                    aria-label={t("output.fontSizeAria", { label: option.label })}
                   >
                     {option.label}
                   </ToggleGroupItem>
@@ -368,7 +404,7 @@ export function App() {
             </div>
 
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium">幅</span>
+              <span className="font-medium">{t("output.width")}</span>
               <ToggleGroup
                 aria-label="Poster width"
                 className="h-10 p-1 rounded-xl"
@@ -388,9 +424,9 @@ export function App() {
                     value={option.value}
                     size="sm"
                     className="h-8 min-w-12 px-3.5 text-sm rounded-lg"
-                    aria-label={`幅 ${option.label}`}
+                    aria-label={t("output.widthAria", { label: t(`output.widthOptions.${option.value}`) })}
                   >
-                    {option.label}
+                    {t(`output.widthOptions.${option.value}`)}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
@@ -416,7 +452,7 @@ export function App() {
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <TriangleAlert className="size-4" />
-                <AlertTitle>エクスポートエラー: {exportError}</AlertTitle>
+                <AlertTitle>{t("output.exportError", { error: exportError })}</AlertTitle>
               </div>
               <Button
                 type="button"
@@ -424,7 +460,7 @@ export function App() {
                 variant="outline"
                 onClick={() => setExportError(null)}
               >
-                閉じる
+                {t("output.close")}
               </Button>
             </div>
           </Alert>
@@ -436,7 +472,7 @@ export function App() {
               <YamlEditor
                 value={yamlText}
                 onChange={handleYamlChange}
-                label="YAML編集"
+                label={t("output.editorLabel")}
               />
               <ValidationPanel validation={validation} />
             </CardContent>

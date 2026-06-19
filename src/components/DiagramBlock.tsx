@@ -1,5 +1,6 @@
 import { type CSSProperties, useEffect, useId, useRef, useState } from "react"
 import yaml from "js-yaml"
+import { useTranslation } from "react-i18next"
 
 import { type DiagramBlock as DiagramBlockType } from "@/schema/posterSchema"
 
@@ -14,6 +15,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const reactId = useId()
   const [error, setError] = useState<string | null>(null)
+  const { t } = useTranslation()
   const style = {
     "--poster-diagram-width": formatDiagramWidth(block.width),
   } as CSSProperties
@@ -66,7 +68,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
         })
       } catch (caught) {
         if (!cancelled) {
-          setError(caught instanceof Error ? caught.message : "図の描画に失敗しました。")
+          setError(caught instanceof Error ? caught.message : t("diagram.renderErrorDefault"))
         }
       }
     }
@@ -76,7 +78,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
     return () => {
       cancelled = true
     }
-  }, [block.body, block.format, reactId, embedded])
+  }, [block.body, block.format, reactId, embedded, t])
 
   return (
     <figure
@@ -88,7 +90,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
       {block.title ? <h3 className="poster-diagram-title">{block.title}</h3> : null}
       {error ? (
         <div className="poster-diagram-error">
-          <strong>図を描画できませんでした</strong>
+          <strong>{t("diagram.renderErrorTitle")}</strong>
           <p>{error}</p>
           <pre>{formatDiagramBody(block.body)}</pre>
         </div>
@@ -101,6 +103,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
     </figure>
   )
 }
+
 
 function formatDiagramBody(body: unknown): string {
   if (typeof body === "string") {
