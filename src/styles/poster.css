@@ -619,6 +619,33 @@
     -webkit-print-color-adjust: exact;
   }
 
+  .poster-columns {
+    grid-template-columns: var(--poster-columns-template) !important;
+  }
+
+  .poster-flow[data-direction="horizontal"] .poster-flow-items {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)) !important;
+  }
+
+  .poster-card-layout {
+    grid-template-columns: var(--poster-card-layout-template) !important;
+  }
+
+  .poster-card-layout[data-variant="aside"] {
+    grid-template-columns: minmax(0, 1.35fr) minmax(12rem, 0.65fr) !important;
+  }
+
+  .poster-card-layout[data-variant="aside"] .poster-card-layout-column:last-child {
+    border-top: 0 !important;
+    border-left: 3px solid var(--poster-card-accent, var(--poster-line)) !important;
+    padding-top: 0 !important;
+    padding-left: 0.85rem !important;
+  }
+
+  .poster-list-definition {
+    grid-template-columns: minmax(4.5rem, 0.42fr) minmax(0, 1fr) !important;
+  }
+
   .poster-card,
   .poster-diagram,
   .poster-flow,

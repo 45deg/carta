@@ -33,6 +33,20 @@ test.describe("Poster Card Generator E2E", () => {
     await expect(page.locator("text=YAMLをAIで作成")).toBeVisible()
   })
 
+  test("keeps default poster columns when printing from a narrow viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 600, height: 900 })
+    await page.getByRole("button", { name: "出力", exact: true }).click()
+    await page.emulateMedia({ media: "print" })
+
+    const columnGrid = page.locator(".poster-columns").first()
+    await expect(columnGrid).toBeAttached()
+
+    const gridTemplateColumns = await columnGrid.evaluate((element) =>
+      getComputedStyle(element).gridTemplateColumns
+    )
+    expect(gridTemplateColumns.split(" ").length).toBeGreaterThan(1)
+  })
+
   test("verifies rendering and downloads for each format", async ({ page }) => {
     // 1. Stub window.print() on the currently loaded page to test PDF printing
     await page.evaluate(() => {
