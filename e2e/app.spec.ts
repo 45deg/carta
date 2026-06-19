@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test"
 import * as fs from "fs"
 
+interface CustomWindow extends Window {
+  __printed?: boolean;
+}
+
 test.describe("Poster Card Generator E2E", () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the app before each test
@@ -32,9 +36,9 @@ test.describe("Poster Card Generator E2E", () => {
   test("verifies rendering and downloads for each format", async ({ page }) => {
     // 1. Stub window.print() on the currently loaded page to test PDF printing
     await page.evaluate(() => {
-      (window as any).__printed = false;
+      (window as unknown as CustomWindow).__printed = false;
       window.print = () => {
-        (window as any).__printed = true;
+        (window as unknown as CustomWindow).__printed = true;
       };
     })
 
@@ -83,7 +87,7 @@ test.describe("Poster Card Generator E2E", () => {
     expect(svgPath).not.toBeNull()
     const svgContent = fs.readFileSync(svgPath!, "utf8")
     expect(svgContent).toContain("<svg")
-    expect(svgContent).toContain("アルゴリズム設計") // Title of default poster should be embedded in the SVG
+    expect(svgContent).toContain("分割統治法") // Title of default poster should be embedded in the SVG
 
     // Wait for the dropdown menu to completely close before clicking again
     await expect(page.locator("text=保存形式")).not.toBeVisible()
@@ -103,8 +107,8 @@ test.describe("Poster Card Generator E2E", () => {
     expect(htmlPath).not.toBeNull()
     const htmlContent = fs.readFileSync(htmlPath!, "utf8")
     expect(htmlContent).toContain("<!doctype html>")
-    expect(htmlContent).toContain("<title>アルゴリズム設計：分割統治法と計算量</title>")
-    expect(htmlContent).toContain("アルゴリズム設計：分割統治法と計算量")
+    expect(htmlContent).toContain("<title>分割統治法：構造・手順・計算量</title>")
+    expect(htmlContent).toContain("分割統治法：構造・手順・計算量")
 
     // Wait for the dropdown menu to completely close before clicking again
     await expect(page.locator("text=保存形式")).not.toBeVisible()
@@ -115,7 +119,7 @@ test.describe("Poster Card Generator E2E", () => {
 
     // --- Test PDF Print ---
     await page.getByRole("menuitem").filter({ hasText: "PDF印刷" }).click()
-    const printed = await page.evaluate(() => (window as any).__printed)
+    const printed = await page.evaluate(() => (window as unknown as CustomWindow).__printed)
     expect(printed).toBe(true)
   })
 })
