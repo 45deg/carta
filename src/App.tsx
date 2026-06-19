@@ -4,6 +4,9 @@ import {
   CheckCircle2,
   ChevronDown,
   Clipboard,
+  Eye,
+  FileDown,
+  GlobeOff,
   TriangleAlert,
 } from "lucide-react"
 
@@ -169,39 +172,55 @@ export function App() {
   if (screen === "workflow") {
     return (
       <main className="min-h-svh bg-muted/40 text-foreground">
-        <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-4 p-4 sm:p-6">
-          <header className="app-chrome flex flex-col gap-1">
-            <p className="text-sm font-medium text-muted-foreground">Carta</p>
-            <h1 className="text-2xl font-semibold tracking-normal">
-              構造化知識ポスタージェネレーター
-            </h1>
+        <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col gap-6 p-6 sm:p-8">
+          <header className="app-chrome flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4">
+            <div className="flex flex-col gap-2">
+              <p className="text-base font-medium text-muted-foreground">構造化知識ポスタージェネレーター</p>
+              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                <svg className="size-8 text-primary" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3.5" y="4.5" width="18" height="23" rx="3" transform="rotate(-12 12.5 16)" fill="currentColor" opacity="0.4" stroke="currentColor" stroke-width="1.5" />
+                  <rect x="10.5" y="4.5" width="18" height="23" rx="3" fill="currentColor" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="14.5" y1="10.5" x2="24.5" y2="10.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                  <line x1="14.5" y1="16.5" x2="20.5" y2="16.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                  <line x1="14.5" y1="22.5" x2="22.5" y2="22.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                Carta
+              </h1>
+            </div>
+            <div className="flex items-center gap-2 mt-2 md:mt-0">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 border border-emerald-200/60 shadow-2xs dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50">
+                <GlobeOff className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                ローカル処理・データ送信なし
+              </span>
+            </div>
           </header>
 
-          <section className="grid flex-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3">
+          <section className="grid flex-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+            <Card className="flex flex-col shadow-xs border-muted/60">
+              <CardHeader className="p-6 sm:p-8 pb-4">
+                <div className="flex items-center gap-4">
                   <StepNumber value="1" />
-                  <CardTitle>YAMLをAIで作成</CardTitle>
+                  <CardTitle className="text-xl font-bold">YAMLをAIで作成</CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-base leading-relaxed mt-3">
                   以下のプロンプトでGPTs/Skills/Gemsなどを作成し、それに説明させたい対象や資料を提示してYAMLを出力させてください。直接プロンプトをチャットに聞いても構いません。
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <label className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Prompt</span>
+              <CardContent className="px-6 sm:px-8 pb-6 flex-1 flex flex-col">
+                <label className="flex flex-col gap-3 flex-1">
+                  <span className="text-base font-medium">Prompt</span>
                   <Textarea
                     value={PROMPT}
                     readOnly
-                    className="min-h-80 resize-none bg-muted/50 font-mono text-xs leading-relaxed"
+                    className="min-h-96 resize-none bg-muted/50 font-mono text-sm leading-relaxed p-4 rounded-xl border-muted/80"
                   />
                 </label>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="px-6 sm:px-8 pb-6 sm:pb-8">
                 <Button
                   type="button"
                   variant="outline"
+                  className="h-10 px-4 text-sm gap-2"
                   onClick={handleCopyPrompt}
                 >
                   {copiedPrompt ? (
@@ -214,24 +233,26 @@ export function App() {
               </CardFooter>
             </Card>
 
-            <Card className="flex min-h-[560px] flex-col">
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="flex min-h-[600px] flex-col shadow-xs border-muted/60">
+              <CardHeader className="p-6 sm:p-8 pb-4">
+                <div className="flex items-center gap-4">
                   <StepNumber value="2" />
-                  <CardTitle>出力されたYAMLを貼り付け</CardTitle>
+                  <CardTitle className="text-xl font-bold">出力されたYAMLを貼り付け</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="flex min-h-0 flex-1 flex-col">
+              <CardContent className="flex min-h-0 flex-1 flex-col px-6 sm:px-8 pb-6 gap-4">
                 <YamlEditor value={yamlText} onChange={handleYamlChange} />
                 <ValidationPanel validation={validation} />
               </CardContent>
-              <CardFooter className="justify-end">
+              <CardFooter className="justify-end px-6 sm:px-8 pb-6 sm:pb-8">
                 <Button
                   type="button"
                   size="lg"
+                  className="h-12 px-6 text-base gap-2"
                   disabled={!validation.ok}
                   onClick={handleOutput}
                 >
+                  <Eye className="size-5" />
                   出力
                 </Button>
               </CardFooter>
@@ -252,6 +273,7 @@ export function App() {
                 type="button"
                 variant="outline"
                 size="sm"
+                className="h-10 px-4 text-sm gap-2"
                 onClick={() => setScreen("workflow")}
               >
                 <ArrowLeft className="size-4" />
@@ -264,14 +286,17 @@ export function App() {
                   setMode(value === "edit" ? "edit" : "preview")
                 }
               >
-                <TabsList className="h-9">
+                <TabsList className="h-10 p-1 rounded-xl">
                   <TabsTrigger
                     value="preview"
-                    className="px-3 text-xs sm:text-sm"
+                    className="h-8 px-4 text-sm rounded-lg"
                   >
                     プレビュー
                   </TabsTrigger>
-                  <TabsTrigger value="edit" className="px-3 text-xs sm:text-sm">
+                  <TabsTrigger
+                    value="edit"
+                    className="h-8 px-4 text-sm rounded-lg"
+                  >
                     編集
                   </TabsTrigger>
                 </TabsList>
@@ -283,6 +308,7 @@ export function App() {
                 type="button"
                 variant="outline"
                 size="sm"
+                className="h-10 px-4 text-sm gap-2"
                 onClick={() => setShowSettings(!showSettings)}
               >
                 設定
@@ -296,6 +322,8 @@ export function App() {
                 isSaving={isSaving}
                 onExport={handleExport}
                 size="sm"
+                className="h-10 px-4 text-sm gap-2"
+                icon={<FileDown className="size-4" />}
               />
             </div>
           </div>
@@ -309,6 +337,7 @@ export function App() {
               <span className="font-medium">Font size</span>
               <ToggleGroup
                 aria-label="Font size"
+                className="h-10 p-1 rounded-xl"
                 value={[fontSizeValue]}
                 onValueChange={(values) => {
                   const nextValue = values.at(-1) as
@@ -324,6 +353,7 @@ export function App() {
                     key={option.value}
                     value={option.value}
                     size="sm"
+                    className="h-8 min-w-9 px-3 text-sm rounded-lg"
                     aria-label={`文字サイズ ${option.label}`}
                   >
                     {option.label}
@@ -336,6 +366,7 @@ export function App() {
               <span className="font-medium">幅</span>
               <ToggleGroup
                 aria-label="Poster width"
+                className="h-10 p-1 rounded-xl"
                 value={[widthValue]}
                 onValueChange={(values) => {
                   const nextValue = values.at(-1) as
@@ -351,6 +382,7 @@ export function App() {
                     key={option.value}
                     value={option.value}
                     size="sm"
+                    className="h-8 min-w-12 px-3.5 text-sm rounded-lg"
                     aria-label={`幅 ${option.label}`}
                   >
                     {option.label}
@@ -366,6 +398,8 @@ export function App() {
               isSaving={isSaving}
               onExport={handleExport}
               size="sm"
+              className="h-10 px-4 text-sm gap-2"
+              icon={<FileDown className="size-4" />}
             />
           </div>
         </div>

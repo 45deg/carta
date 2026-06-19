@@ -108,6 +108,7 @@ const blockSchema: z.ZodTypeAny = z.lazy(() =>
       type: z.literal("card"),
       title: z.string().min(1, "card.title is required"),
       emoji: z.string().optional(),
+      icon: z.string().optional(),
       color: z.enum(posterColors).optional(),
       body: z.union([
         z.string().min(1, "card.body is required"),
@@ -146,6 +147,7 @@ export type CardBlock = {
   type: "card"
   title: string
   emoji?: string
+  icon?: string
   color?: PosterColor
   body: string | CardContent[]
 }

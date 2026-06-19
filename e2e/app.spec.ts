@@ -12,7 +12,8 @@ test.describe("Poster Card Generator E2E", () => {
   })
 
   test("loads the application and displays the main heading", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText("構造化知識ポスタージェネレーター")
+    await expect(page.locator("h1")).toContainText("Carta")
+    await expect(page.locator("header.app-chrome p")).toContainText("構造化知識ポスタージェネレーター")
   })
 
   test("can navigate to output screen and back to workflow", async ({ page }) => {

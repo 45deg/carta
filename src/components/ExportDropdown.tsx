@@ -1,3 +1,4 @@
+import { type ReactNode } from "react"
 import { ChevronDown, FileCode2, FileImage, Printer } from "lucide-react"
 
 import {
@@ -8,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
 export type ExportFormat = "png" | "svg" | "pdf" | "html"
 
@@ -17,6 +19,8 @@ type ExportDropdownProps = {
   onExport: (format: ExportFormat) => void
   variant?: "default" | "outline" | "secondary" | "ghost" | "destructive" | "link"
   size?: "default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg"
+  icon?: ReactNode
+  className?: string
 }
 
 export function ExportDropdown({
@@ -25,10 +29,19 @@ export function ExportDropdown({
   onExport,
   variant = "default",
   size = "default",
+  icon,
+  className,
 }: ExportDropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger type="button" disabled={disabled} variant={variant} size={size}>
+      <DropdownMenuTrigger
+        type="button"
+        disabled={disabled}
+        variant={variant}
+        size={size}
+        className={cn(className)}
+      >
+        {icon}
         {isSaving ? "保存中" : "出力"}
         <ChevronDown className="size-4 opacity-50" />
       </DropdownMenuTrigger>

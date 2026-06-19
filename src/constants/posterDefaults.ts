@@ -24,6 +24,7 @@ export const samplePoster: Poster = {
       type: "card",
       title: "基本発想",
       emoji: "💡",
+      icon: "lightbulb",
       color: "concept",
       body: [
         {
@@ -59,6 +60,7 @@ export const samplePoster: Poster = {
           type: "card",
           title: "マージソートで見る処理",
           emoji: "⚙️",
+          icon: "settings",
           color: "procedure",
           body: [
             {
@@ -130,6 +132,7 @@ export const samplePoster: Poster = {
       type: "card",
       title: "再帰方程式の読み方",
       emoji: "📘",
+      icon: "book-open",
       color: "term",
       body: [
         {

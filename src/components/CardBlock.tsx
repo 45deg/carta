@@ -1,4 +1,5 @@
-import { type CSSProperties } from "react"
+import React, { type CSSProperties } from "react"
+import * as LucideIcons from "lucide-react"
 
 import { CardContentRenderer } from "@/components/CardContentRenderer"
 import { MarkdownRenderer } from "@/components/MarkdownRenderer"
@@ -28,6 +29,23 @@ const posterColorMap: Record<
   note: { hex: "#4B5563", kind: "neutral" },
 }
 
+const iconsMap = LucideIcons as unknown as Record<
+  string,
+  React.ComponentType<{ className?: string }>
+>
+
+function getLucideIcon(name: string) {
+  if (!name) return null
+  // kebab-case (e.g. book-open) or snake_case (e.g. book_open) to PascalCase (e.g. BookOpen)
+  const pascalName = name
+    .replace(/(-\w)/g, (m) => m[1].toUpperCase())
+    .replace(/(_\w)/g, (m) => m[1].toUpperCase())
+    .replace(/(^\w)/g, (m) => m.toUpperCase())
+    .replace(/[^a-zA-Z0-9]/g, "")
+
+  return iconsMap[pascalName] || iconsMap[name] || null
+}
+
 export function CardBlock({ block }: CardBlockProps) {
   const color = (block.color && posterColorMap[block.color])
     ? posterColorMap[block.color]
@@ -41,6 +59,8 @@ export function CardBlock({ block }: CardBlockProps) {
     "--poster-card-surface": "#ffffff",
   } as CSSProperties
 
+  const IconComponent = block.icon ? getLucideIcon(block.icon) : null
+
   return (
     <section
       className="poster-card"
@@ -48,7 +68,11 @@ export function CardBlock({ block }: CardBlockProps) {
       style={style}
     >
       <div className="poster-card-heading">
-        {block.emoji ? (
+        {IconComponent ? (
+          <span className="poster-card-icon">
+            {React.createElement(IconComponent, { className: "size-5" })}
+          </span>
+        ) : block.emoji ? (
           <span className="poster-card-emoji">{block.emoji}</span>
         ) : null}
         <h2>{block.title}</h2>

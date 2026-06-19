@@ -66,13 +66,15 @@ blocks: []
 \`\`\`yaml
 type: card
 title: "見出し"
-emoji: "任意"
+emoji: "任意（絵文字）"
+icon: "任意（Lucideアイコン名。例: lightbulb, book-open, help-circle など）"
 color: "danger | important | default | supplement | procedure | concept | term | context | note"
 body: "Markdown文字列、またはcontent配列"
 \`\`\`
 
 * title: カードの内容が一目で分かる見出し。
-* emoji: 任意。カードの役割を補助する短いアイコン。本文だけで意味が伝わる場合は省略してよい。
+* emoji: 任意。カードの役割を補助する短い絵文字。iconが指定された場合はそちらが優先されます。
+* icon: 任意。カードの役割を補助するLucideアイコン名。
 * color: カードの役割を示すセマンティック名。
 * body: Markdown本文、またはmarkdown/diagram/flow/list/layoutを並べたcontent配列。
 
