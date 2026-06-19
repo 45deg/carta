@@ -38,15 +38,18 @@ import {
 import {
   posterFontSizeOptions,
   posterWidthOptions,
+  posterColumnCountOptions,
   samplePosterJa,
   samplePosterEn,
 } from "@/constants/posterDefaults"
 
 type PosterFontSizeValue = (typeof posterFontSizeOptions)[number]["value"]
 type PosterWidthValue = (typeof posterWidthOptions)[number]["value"]
+type PosterColumnCountValue = (typeof posterColumnCountOptions)[number]["value"]
 
 const defaultFontSizeValue: PosterFontSizeValue = "3"
 const defaultWidthValue: PosterWidthValue = "medium"
+const defaultColumnCountValue: PosterColumnCountValue = "1"
 const PosterPreview = lazy(() =>
   import("@/components/PosterPreview").then((module) => ({
     default: module.PosterPreview,
@@ -74,6 +77,8 @@ export function App() {
     useState<PosterFontSizeValue>(defaultFontSizeValue)
   const [widthValue, setWidthValue] =
     useState<PosterWidthValue>(defaultWidthValue)
+  const [columnCountValue, setColumnCountValue] =
+    useState<PosterColumnCountValue>(defaultColumnCountValue)
   const [isSaving, setIsSaving] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [copiedPrompt, setCopiedPrompt] = useState(false)
@@ -86,8 +91,57 @@ export function App() {
   const posterWidth =
     posterWidthOptions.find((option) => option.value === widthValue)?.width ??
     "fit"
+  const columnCount =
+    posterColumnCountOptions.find((option) => option.value === columnCountValue)
+      ?.count ?? 1
   const exportPosterWidth =
-    typeof posterWidth === "number" ? posterWidth : getFitScreenPosterWidth()
+    typeof posterWidth === "number" ? posterWidth * columnCount : getFitScreenPosterWidth()
+
+  useEffect(() => {
+    const node = posterRef.current
+    if (!node) return
+
+    const checkLandscape = () => {
+      const rect = node.getBoundingClientRect()
+      const isLandscape = rect.width > rect.height
+      if (isLandscape) {
+        document.body.classList.add("is-landscape-print")
+      } else {
+        document.body.classList.remove("is-landscape-print")
+      }
+      document.body.setAttribute("data-print-columns", String(columnCount))
+    }
+
+    checkLandscape()
+
+    const observer = new ResizeObserver(checkLandscape)
+    observer.observe(node)
+
+    const handleBeforePrint = () => {
+      const rect = node.getBoundingClientRect()
+      if (rect.width > rect.height) {
+        const style = document.createElement("style")
+        style.id = "print-landscape-style"
+        style.innerHTML = "@media print { @page { size: A4 landscape !important; } }"
+        document.head.appendChild(style)
+      }
+    }
+    const handleAfterPrint = () => {
+      document.getElementById("print-landscape-style")?.remove()
+    }
+
+    window.addEventListener("beforeprint", handleBeforePrint)
+    window.addEventListener("afterprint", handleAfterPrint)
+
+    return () => {
+      observer.disconnect()
+      document.body.classList.remove("is-landscape-print")
+      document.body.removeAttribute("data-print-columns")
+      window.removeEventListener("beforeprint", handleBeforePrint)
+      window.removeEventListener("afterprint", handleAfterPrint)
+      document.getElementById("print-landscape-style")?.remove()
+    }
+  }, [poster, fontSizeValue, widthValue, columnCountValue, columnCount])
 
   useEffect(() => {
     let cancelled = false
@@ -144,7 +198,7 @@ export function App() {
         : posterRef.current
     const targetWidth =
       typeof posterWidth === "number"
-        ? posterWidth
+        ? posterWidth * columnCount
         : getRenderedPosterWidth(posterRef.current)
 
     if (!node || !htmlNode) {
@@ -433,6 +487,35 @@ export function App() {
                 ))}
               </ToggleGroup>
             </div>
+
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">{t("output.columnCount")}</span>
+              <ToggleGroup
+                aria-label="Column count"
+                className="h-10 p-1 rounded-xl"
+                value={[columnCountValue]}
+                onValueChange={(values) => {
+                  const nextValue = values.at(-1) as
+                    | PosterColumnCountValue
+                    | undefined
+                  if (nextValue) {
+                    setColumnCountValue(nextValue)
+                  }
+                }}
+              >
+                {posterColumnCountOptions.map((option) => (
+                  <ToggleGroupItem
+                    key={option.value}
+                    value={option.value}
+                    size="sm"
+                    className="h-8 min-w-9 px-3 text-sm rounded-lg"
+                    aria-label={t("output.columnCountAria", { label: option.label })}
+                  >
+                    {option.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -448,7 +531,7 @@ export function App() {
         </div>
       </header>
 
-      <div className="poster-output-page mx-auto w-full max-w-7xl p-4 flex flex-col gap-4">
+      <div className="poster-output-page p-4 flex flex-col gap-4">
         {exportError ? (
           <Alert variant="destructive">
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
@@ -476,6 +559,7 @@ export function App() {
               poster={poster}
               baseFontSize={baseFontSize}
               width={posterWidth}
+              columnCount={columnCount}
             />
           </section>
 
@@ -497,6 +581,7 @@ export function App() {
               poster={poster}
               baseFontSize={baseFontSize}
               width={exportPosterWidth}
+              columnCount={columnCount}
             />
           </div>
         </Suspense>

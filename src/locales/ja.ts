@@ -22,6 +22,8 @@ export const jaResources = {
       fontSizeAria: "文字サイズ {{label}}",
       width: "幅",
       widthAria: "幅 {{label}}",
+      columnCount: "列分割",
+      columnCountAria: "列分割数 {{label}}",
       widthOptions: {
         max: "最大",
         large: "大",

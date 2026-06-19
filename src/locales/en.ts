@@ -22,6 +22,8 @@ export const enResources = {
       fontSizeAria: "Font size {{label}}",
       width: "Width",
       widthAria: "Width {{label}}",
+      columnCount: "Columns",
+      columnCountAria: "Columns {{label}}",
       widthOptions: {
         max: "Max",
         large: "Large",

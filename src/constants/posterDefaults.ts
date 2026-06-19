@@ -15,6 +15,12 @@ export const posterWidthOptions = [
   { label: "小", value: "small", width: 840 },
 ] as const
 
+export const posterColumnCountOptions = [
+  { label: "1", value: "1", count: 1 },
+  { label: "2", value: "2", count: 2 },
+  { label: "3", value: "3", count: 3 },
+] as const
+
 export const samplePosterJa: Poster = {
   title: "分割統治法：構造・手順・計算量",
   description:

@@ -8,10 +8,11 @@ type PosterPreviewProps = {
   poster: Poster
   baseFontSize: number
   width: number | "fit"
+  columnCount?: number
 }
 
 export const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(
-  ({ poster, baseFontSize, width }, ref) => {
+  ({ poster, baseFontSize, width, columnCount }, ref) => {
     return (
       <article
         ref={ref}
@@ -19,15 +20,16 @@ export const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(
         style={
           {
             "--poster-base-font-size": `${baseFontSize}px`,
-            "--poster-page-width": width === "fit" ? "100%" : `${width}px`,
+            "--poster-page-width": width === "fit" ? "100%" : `${width * (columnCount ?? 1)}px`,
+            "--poster-column-count": columnCount ?? 1,
           } as CSSProperties
         }
       >
-        <header className="poster-header">
-          <h1>{poster.title}</h1>
-          <p>{poster.description}</p>
-        </header>
-        <div className="poster-blocks">
+        <div className="poster-blocks" data-column-count={columnCount ?? 1}>
+          <header className="poster-header">
+            <h1>{poster.title}</h1>
+            <p>{poster.description}</p>
+          </header>
           {poster.blocks.map((block, index) => (
             <BlockRenderer key={index} block={block} />
           ))}
