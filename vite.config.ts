@@ -8,6 +8,7 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
   build: {
+    outDir: "carta",
     chunkSizeWarningLimit: 800,
   },
   resolve: {
