@@ -1,6 +1,8 @@
 import { CardBlock } from "@/components/CardBlock"
 import { ColumnsBlock } from "@/components/ColumnsBlock"
 import { DiagramBlock } from "@/components/DiagramBlock"
+import { FlowBlock } from "@/components/FlowBlock"
+import { ListBlock } from "@/components/ListBlock"
 import { type Block } from "@/schema/posterSchema"
 
 type BlockRendererProps = {
@@ -15,5 +17,9 @@ export function BlockRenderer({ block }: BlockRendererProps) {
       return <ColumnsBlock block={block} />
     case "diagram":
       return <DiagramBlock block={block} />
+    case "flow":
+      return <FlowBlock block={block} />
+    case "list":
+      return <ListBlock block={block} />
   }
 }

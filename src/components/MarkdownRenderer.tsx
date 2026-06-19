@@ -25,3 +25,18 @@ export function MarkdownRenderer({ text }: MarkdownRendererProps) {
   )
 }
 
+export function InlineMarkdownRenderer({ text }: MarkdownRendererProps) {
+  return (
+    <span className="poster-inline-markdown">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath, remarkCjkFriendly]}
+        rehypePlugins={[rehypeKatex, rehypeHighlight]}
+        components={{
+          p: ({ children }) => <>{children}</>,
+        }}
+      >
+        {text}
+      </ReactMarkdown>
+    </span>
+  )
+}

@@ -3,116 +3,198 @@ import { type Poster } from "@/schema/posterSchema"
 export const posterWidthOptions = [720, 840, 960, 1080, 1200]
 
 export const samplePoster: Poster = {
-  title: "アルゴリズム設計：分割統治法と計算量",
+  title: "分割統治法：構造・手順・計算量",
   description:
-    "大きな問題を小さな問題に分割して解く「分割統治法」の基本、計算量の評価方法、およびマージソートを例とした具体的な流れを整理した学習用ポスターです。",
+    "大きな問題を小さな部分問題へ分けて解く分割統治法について、基本構造、マージソートの流れ、再帰方程式の読み方、実装時の注意点を整理した学習用ポスターです。",
   blocks: [
     {
       type: "card",
-      title: "分割統治法 (Divide and Conquer) の基本設計",
+      title: "基本発想",
       emoji: "💡",
       color: "concept",
-      body: "分割統治法は、困難な問題を**直接解決しやすい小さな部分問題**に分割し、それぞれの答えを組み合わせて元の問題の解決策を得るアプローチです。\n\n通常、以下の**3つのステップ**を再帰的に適用します。\n\n| フェーズ | 実行内容 | 目的 |\n| :--- | :--- | :--- |\n| **1. 分割 (Divide)** | 元の問題を同一形式の複数の部分問題へと分割する | 扱いやすいサイズまで問題を小さくする |\n| **2. 統治 (Conquer)** | 部分問題を再帰的に解く。十分に小さければ直接解く | 各部分問題の独立した解決 |\n| **3. 結合 (Combine)** | 部分問題の解を結合して、元の問題の解を構築する | 分散した解を統合する |"
+      body: [
+        {
+          type: "markdown",
+          text: "分割統治法は、問題を**同じ形の小さな問題**に分け、部分問題の答えを組み合わせて全体の答えを作る設計法です。再帰的に考えると、複雑な処理を「分ける」「解く」「合わせる」の役割に分離できます。",
+        },
+        {
+          type: "flow",
+          variant: "steps",
+          direction: "horizontal",
+          items: [
+            {
+              title: "Divide",
+              body: "元の問題を、同じ形式の複数の部分問題に分割する。",
+            },
+            {
+              title: "Conquer",
+              body: "部分問題を再帰的に解く。十分に小さい場合は直接解く。",
+            },
+            {
+              title: "Combine",
+              body: "部分問題の解を結合し、元の問題の解を構成する。",
+            },
+          ],
+        },
+      ],
     },
     {
       type: "columns",
-      size: [1, 1],
+      size: [2, 1],
       columns: [
         {
           type: "card",
-          title: "基本アルゴリズム：マージソート",
-          emoji: "⚡",
+          title: "マージソートで見る処理",
+          emoji: "⚙️",
           color: "procedure",
-          body: "マージソートは分割統治法の最も典型的な応用例です。\n配列を半分に分割し、それぞれをソートした後に「マージ」します。\n\n### 特徴と計算量\n- **最悪/最善/平均時間計算量**: $O(n \\log n)$\n- **空間計算量**: $O(n)$ (外部メモリを必要とする)\n- **安定性**: 安定ソートである\n\n### 再帰方程式 (Recurrence)\n$$\nT(n) = 2T(n/2) + O(n)\n$$\nここで $2T(n/2)$ は2つの部分問題のソート、$O(n)$ はマージ処理のコストを表します。"
+          body: [
+            {
+              type: "markdown",
+              text: "マージソートは分割統治法の典型例です。配列を半分に分け、左右をそれぞれ整列し、最後に整列済み配列として結合します。",
+            },
+            {
+              type: "layout",
+              variant: "side_by_side",
+              size: [1.1, 0.9],
+              columns: [
+                [
+                  {
+                    type: "flow",
+                    variant: "timeline",
+                    direction: "vertical",
+                    items: [
+                      {
+                        title: "分割",
+                        body: "`[5, 2, 4, 7]` を `[5, 2]` と `[4, 7]` に分ける。",
+                      },
+                      {
+                        title: "基底",
+                        body: "要素数が1になるまで分割し、単独要素は整列済みとみなす。",
+                      },
+                      {
+                        title: "結合",
+                        body: "小さい要素から順に取り出し、`[2, 4, 5, 7]` を作る。",
+                      },
+                    ],
+                  },
+                ],
+                [
+                  {
+                    type: "list",
+                    title: "性質",
+                    variant: "definitions",
+                    items: [
+                      {
+                        term: "時間計算量",
+                        body: "最悪・平均・最善のいずれも $O(n \\log n)$。",
+                      },
+                      {
+                        term: "空間計算量",
+                        body: "マージ用の補助配列が必要なので $O(n)$。",
+                      },
+                      {
+                        term: "安定性",
+                        body: "同じ値の相対順序を保てる安定ソート。",
+                      },
+                    ],
+                  },
+                ],
+              ],
+            },
+          ],
         },
         {
           type: "diagram",
           format: "mermaid",
-          title: "マージソートの処理フロー",
-          body: "flowchart TD\n  subgraph Split [分割フェーズ Top-Down]\n    A[\"[5, 2, 4, 7] (未ソート)\"] --> B1[\"[5, 2]\"]\n    A --> B2[\"[4, 7]\"]\n    B1 --> C1[\"[5]\"]\n    B1 --> C2[\"[2]\"]\n    B2 --> C3[\"[4]\"]\n    B2 --> C4[\"[7]\"]\n  end\n  subgraph Merge [マージフェーズ Bottom-Up]\n    C1 --> D1[\"[2, 5] (ソート済)\"]\n    C2 --> D1\n    C3 --> D2[\"[4, 7] (ソート済)\"]\n    C4 --> D2\n    D1 --> E[\"[2, 4, 5, 7] (完全ソート)\"]\n    D2 --> E\n  end\n  style A fill:#f1f5f9,stroke:#64748b,stroke-width:2px\n  style E fill:#ecfdf5,stroke:#10b981,stroke-width:2px\n  style C1 fill:#fee2e2,stroke:#ef4444\n  style C2 fill:#fee2e2,stroke:#ef4444\n  style C3 fill:#fee2e2,stroke:#ef4444\n  style C4 fill:#fee2e2,stroke:#ef4444",
-          caption: "要素数が1になるまで再帰的に分割し、整列しながら木を遡るようにマージします。"
-        }
-      ]
-    },
-    {
-      type: "columns",
-      size: [1, 1],
-      columns: [
-        {
-          type: "card",
-          title: "計算量解析の武器：マスター定理 (Master Theorem)",
-          emoji: "🎓",
-          color: "term",
-          body: "マスター定理は、再帰方程式 $T(n) = aT(n/b) + f(n)$ を持つ分割統治アルゴリズムの時間計算量を簡潔に評価するための強力な定理です。\n\n### 基本定義\n- $a \\ge 1$: 部分問題の数\n- $b > 1$: 部分問題の縮小比率\n- $f(n)$: 分割とマージのコスト\n\n### 3つのケース分類\n$c = \\log_b a$ と定義し、$f(n) = \\Theta(n^d)$ とする。\n\n| ケース | 条件 | 解 $T(n)$ | 例 |\n| :--- | :--- | :--- | :--- |\n| **Case 1** | $d < c$ | $T(n) = \\Theta(n^{\\log_b a})$ | 行列積 (Strassen) |\n| **Case 2** | $d = c$ | $T(n) = \\Theta(n^d \\log n)$ | **マージソート** |\n| **Case 3** | $d > c$ | $T(n) = \\Theta(f(n))$ | クイックソート (最良) |"
+          title: "分割と結合の全体像",
+          body: "flowchart TD\n  A[\"[5, 2, 4, 7]\"] --> B1[\"[5, 2]\"]\n  A --> B2[\"[4, 7]\"]\n  B1 --> C1[\"[5]\"]\n  B1 --> C2[\"[2]\"]\n  B2 --> C3[\"[4]\"]\n  B2 --> C4[\"[7]\"]\n  C1 --> D1[\"[2, 5]\"]\n  C2 --> D1\n  C3 --> D2[\"[4, 7]\"]\n  C4 --> D2\n  D1 --> E[\"[2, 4, 5, 7]\"]\n  D2 --> E",
+          caption:
+            "要素数が1になるまで分割し、整列済みの部分配列を下から順に結合します。",
         },
-        {
-          type: "diagram",
-          format: "vega_lite",
-          title: "時間計算量の増大比較 (シミュレーション)",
-          body: {
-            $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-            description: "Comparison of sorting algorithms",
-            data: {
-              values: [
-                { n: 1000, algorithm: "Bubble Sort (O(n²))", time: 300 },
-                { n: 2000, algorithm: "Bubble Sort (O(n²))", time: 1200 },
-                { n: 3000, algorithm: "Bubble Sort (O(n²))", time: 2700 },
-                { n: 4000, algorithm: "Bubble Sort (O(n²))", time: 4800 },
-                { n: 5000, algorithm: "Bubble Sort (O(n²))", time: 7500 },
-                { n: 1000, algorithm: "Merge Sort (O(n log n))", time: 15 },
-                { n: 2000, algorithm: "Merge Sort (O(n log n))", time: 32 },
-                { n: 3000, algorithm: "Merge Sort (O(n log n))", time: 50 },
-                { n: 4000, algorithm: "Merge Sort (O(n log n))", time: 68 },
-                { n: 5000, algorithm: "Merge Sort (O(n log n))", time: 88 },
-                { n: 1000, algorithm: "Quick Sort (O(n log n))", time: 10 },
-                { n: 2000, algorithm: "Quick Sort (O(n log n))", time: 22 },
-                { n: 3000, algorithm: "Quick Sort (O(n log n))", time: 35 },
-                { n: 4000, algorithm: "Quick Sort (O(n log n))", time: 48 },
-                { n: 5000, algorithm: "Quick Sort (O(n log n))", time: 62 }
-              ]
-            },
-            mark: { type: "line", point: true },
-            encoding: {
-              x: {
-                field: "n",
-                type: "quantitative",
-                title: "要素数 (N)",
-                axis: { grid: true }
-              },
-              y: {
-                field: "time",
-                type: "quantitative",
-                title: "実行時間 (ミリ秒)",
-                scale: { type: "linear" }
-              },
-              color: {
-                field: "algorithm",
-                type: "nominal",
-                title: "アルゴリズム",
-                legend: {
-                  orient: "bottom"
-                },
-                scale: {
-                  domain: [
-                    "Bubble Sort (O(n²))",
-                    "Merge Sort (O(n log n))",
-                    "Quick Sort (O(n log n))"
-                  ],
-                  range: ["#ef4444", "#3b82f6", "#10b981"]
-                }
-              }
-            }
-          },
-          caption: "要素数Nの増加に伴う、バブルソート(赤)、マージソート(青)、クイックソート(緑)の理論的な実行時間推移の比較。"
-        }
-      ]
+      ],
     },
     {
       type: "card",
-      title: "コールスタックの制限と最適化",
-      emoji: "⚠️",
-      color: "danger",
-      body: "再帰アルゴリズムの実装時には、コールスタックの消費による **Stack Overflow** に対する考慮が不可欠です。\n\n### 主な最適化・回避アプローチ\n1. **末尾再帰最適化 (Tail Call Optimization)**:\n   関数の末尾で再帰呼び出しを行う設計。コンパイラやランタイムがスタックフレームを再利用できる場合に有効です。\n2. **イテレーティブな実装への書き換え**:\n   キューやスタック用の配列を用意し、`while` ループを用いて明示的に処理を管理します。\n\n### JavaScriptによるマージ処理の実装例\n```javascript\n// 2つのソート済み配列をマージする関数\nfunction merge(left, right) {\n  const result = [];\n  let l = 0, r = 0;\n  while (l < left.length && r < right.length) {\n    if (left[l] < right[r]) {\n      result.push(left[l++]);\n    } else {\n      result.push(right[r++]);\n    }\n  }\n  return result.concat(left.slice(l)).concat(right.slice(r));\n}\n```"
-    }
-  ]
+      title: "再帰方程式の読み方",
+      emoji: "📘",
+      color: "term",
+      body: [
+        {
+          type: "markdown",
+          text: "分割統治法の計算量は、再帰方程式 $T(n) = aT(n/b) + f(n)$ として表せます。マージソートでは $T(n) = 2T(n/2) + O(n)$ です。",
+        },
+        {
+          type: "layout",
+          variant: "aside",
+          columns: [
+            [
+              {
+                type: "list",
+                variant: "definitions",
+                items: [
+                  {
+                    term: "$a$",
+                    body: "生成される部分問題の数。マージソートでは2。",
+                  },
+                  {
+                    term: "$b$",
+                    body: "部分問題の縮小比率。マージソートでは2。",
+                  },
+                  {
+                    term: "$f(n)$",
+                    body: "分割と結合にかかる、再帰呼び出し以外のコスト。",
+                  },
+                ],
+              },
+            ],
+            [
+              {
+                type: "markdown",
+                text: "**直感**  \n各段で全要素を一度ずつマージし、段数は $\\log n$ 段あります。したがって全体は $O(n \\log n)$ になります。",
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    {
+      type: "flow",
+      title: "実装時に確認する順序",
+      variant: "steps",
+      direction: "horizontal",
+      items: [
+        {
+          title: "基底条件",
+          body: "問題サイズが十分小さいときに必ず停止する条件を書く。",
+        },
+        {
+          title: "分割の妥当性",
+          body: "部分問題が元の問題と同じ形式になっているか確認する。",
+        },
+        {
+          title: "結合の正しさ",
+          body: "部分解から全体解を作る処理で情報を落としていないか確認する。",
+        },
+      ],
+    },
+    {
+      type: "list",
+      title: "よくある落とし穴",
+      variant: "checklist",
+      items: [
+        {
+          body: "基底条件が弱く、再帰が止まらない。",
+          checked: true,
+        },
+        {
+          body: "分割後の部分問題が重なり、想定より計算量が増える。",
+          checked: true,
+        },
+        {
+          body: "結合処理のコストを無視して、再帰呼び出しだけで計算量を見積もる。",
+          checked: true,
+        },
+      ],
+    },
+  ],
 }

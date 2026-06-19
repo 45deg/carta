@@ -1,6 +1,6 @@
 import { type CSSProperties } from "react"
 
-import { DiagramBlock } from "@/components/DiagramBlock"
+import { CardContentRenderer } from "@/components/CardContentRenderer"
 import { MarkdownRenderer } from "@/components/MarkdownRenderer"
 import {
   type CardBlock as CardBlockType,
@@ -57,13 +57,9 @@ export function CardBlock({ block }: CardBlockProps) {
         {typeof block.body === "string" ? (
           <MarkdownRenderer text={block.body} />
         ) : (
-          block.body.map((content, index) =>
-            content.type === "markdown" ? (
-              <MarkdownRenderer key={index} text={content.text} />
-            ) : (
-              <DiagramBlock key={index} block={content} embedded />
-            )
-          )
+          block.body.map((content, index) => (
+            <CardContentRenderer key={index} content={content} />
+          ))
         )}
       </div>
     </section>

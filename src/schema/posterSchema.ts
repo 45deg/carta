@@ -15,6 +15,10 @@ export const posterColors = [
 ] as const
 
 export const diagramFormats = ["mermaid", "vega_lite"] as const
+export const flowVariants = ["steps", "timeline"] as const
+export const flowDirections = ["horizontal", "vertical"] as const
+export const listVariants = ["bullets", "checklist", "definitions"] as const
+export const layoutVariants = ["side_by_side", "aside"] as const
 
 const vegaLiteBodySchema = z.union([z.string(), z.record(z.string(), z.unknown())]).refine((value) => value !== undefined, {
   message: "diagram.body is required",
@@ -54,14 +58,51 @@ const diagramContentSchema = z.union([
   vegaLiteDiagramContentSchema,
 ])
 
-const cardContentSchema = z.union([
-  markdownContentSchema,
-  diagramContentSchema,
-])
+const flowItemSchema = z.object({
+  title: z.string().min(1, "flow.items.title is required"),
+  body: z.string().min(1, "flow.items.body is required"),
+})
 
-type BlockSchema = z.ZodType<CardBlock | ColumnsBlock | DiagramBlock>
+const flowSchema = z.object({
+  type: z.literal("flow"),
+  title: z.string().optional(),
+  variant: z.enum(flowVariants).optional(),
+  direction: z.enum(flowDirections).optional(),
+  items: z.array(flowItemSchema).min(2, "flow.items must have at least 2 items"),
+})
 
-const blockSchema: BlockSchema = z.lazy(() =>
+const listItemSchema = z.object({
+  term: z.string().optional(),
+  body: z.string().min(1, "list.items.body is required"),
+  checked: z.boolean().optional(),
+})
+
+const listSchema = z.object({
+  type: z.literal("list"),
+  title: z.string().optional(),
+  variant: z.enum(listVariants).optional(),
+  items: z.array(listItemSchema).min(1, "list.items must have at least 1 item"),
+})
+
+const cardContentSchema: z.ZodTypeAny = z.lazy(() =>
+  z.union([
+    markdownContentSchema,
+    diagramContentSchema,
+    flowSchema,
+    listSchema,
+    z.object({
+      type: z.literal("layout"),
+      variant: z.enum(layoutVariants),
+      size: z.array(z.number().positive()).optional(),
+      columns: z
+        .array(z.array(cardContentSchema).min(1, "layout.columns item must have at least 1 item"))
+        .min(2, "layout.columns must have at least 2 items")
+        .max(3, "layout.columns must have at most 3 items"),
+    }),
+  ])
+)
+
+const blockSchema: z.ZodTypeAny = z.lazy(() =>
   z.union([
     z.object({
       type: z.literal("card"),
@@ -84,17 +125,23 @@ const blockSchema: BlockSchema = z.lazy(() =>
     }),
     mermaidDiagramBlockSchema,
     vegaLiteDiagramBlockSchema,
+    flowSchema,
+    listSchema,
   ])
 )
 
-export const posterSchema = z.object({
+export const posterSchema: z.ZodType<Poster> = z.object({
   title: z.string().min(1, "title is required"),
   description: z.string().min(1, "description is required"),
-  blocks: z.array(blockSchema).min(1, "blocks must have at least 1 item"),
+  blocks: z.array(blockSchema as z.ZodType<Block>).min(1, "blocks must have at least 1 item"),
 })
 
-export type Poster = z.infer<typeof posterSchema>
-export type Block = Poster["blocks"][number]
+export type Poster = {
+  title: string
+  description: string
+  blocks: Block[]
+}
+export type Block = CardBlock | ColumnsBlock | DiagramBlock | FlowBlock | ListBlock
 export type CardBlock = {
   type: "card"
   title: string
@@ -102,7 +149,12 @@ export type CardBlock = {
   color?: PosterColor
   body: string | CardContent[]
 }
-export type CardContent = MarkdownContent | DiagramContent
+export type CardContent =
+  | MarkdownContent
+  | DiagramContent
+  | FlowBlock
+  | ListBlock
+  | LayoutContent
 export type MarkdownContent = {
   type: "markdown"
   text: string
@@ -144,8 +196,40 @@ export type VegaLiteDiagramBlock = {
   body: VegaLiteBody
   caption: string
 }
+export type FlowBlock = {
+  type: "flow"
+  title?: string
+  variant?: FlowVariant
+  direction?: FlowDirection
+  items: FlowItem[]
+}
+export type FlowItem = {
+  title: string
+  body: string
+}
+export type ListBlock = {
+  type: "list"
+  title?: string
+  variant?: ListVariant
+  items: ListItem[]
+}
+export type ListItem = {
+  term?: string
+  body: string
+  checked?: boolean
+}
+export type LayoutContent = {
+  type: "layout"
+  variant: LayoutVariant
+  size?: number[]
+  columns: CardContent[][]
+}
 export type PosterColor = (typeof posterColors)[number]
 export type DiagramFormat = (typeof diagramFormats)[number]
+export type FlowVariant = (typeof flowVariants)[number]
+export type FlowDirection = (typeof flowDirections)[number]
+export type ListVariant = (typeof listVariants)[number]
+export type LayoutVariant = (typeof layoutVariants)[number]
 export type VegaLiteBody = unknown
 
 export type PosterValidationResult =
@@ -175,7 +259,7 @@ export async function parsePosterYaml(
           "",
           message,
           "",
-          "注意: blocks は1件以上、columns.columns は再帰的な Block 配列、type/color/format は定義済みの値だけを使ってください。",
+          "注意: blocks は1件以上、columns.columns は再帰的な Block 配列、card.body の layout.columns は content 配列、type/color/format/variant は定義済みの値だけを使ってください。",
         ].join("\n"),
       }
     }
@@ -230,15 +314,28 @@ async function validateMermaidDiagrams(poster: Poster): Promise<string[]> {
 
     if (block.type === "card" && Array.isArray(block.body)) {
       block.body.forEach((content, index) => {
-        if (content.type === "diagram") {
-          visitDiagram(content, `${path}.body.${index}`)
-        }
+        visitContent(content, `${path}.body.${index}`)
       })
       return
     }
 
     if (block.type === "diagram") {
       visitDiagram(block, path)
+    }
+  }
+
+  function visitContent(content: CardContent, path: string) {
+    if (content.type === "diagram") {
+      visitDiagram(content, path)
+      return
+    }
+
+    if (content.type === "layout") {
+      content.columns.forEach((column, columnIndex) =>
+        column.forEach((item, itemIndex) =>
+          visitContent(item, `${path}.columns.${columnIndex}.${itemIndex}`)
+        )
+      )
     }
   }
 
