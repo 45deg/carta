@@ -16,6 +16,7 @@ import { YamlEditor } from "@/components/YamlEditor"
 import { StepNumber } from "@/components/StepNumber"
 import { ValidationPanel } from "@/components/ValidationPanel"
 import { ExportDropdown, type ExportFormat } from "@/components/ExportDropdown"
+import { Github } from "@/assets/Github"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -233,6 +234,16 @@ export function App() {
                   English
                 </ToggleGroupItem>
               </ToggleGroup>
+              <a
+                href="https://github.com/45deg/carta"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center size-8 rounded-lg border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shadow-2xs"
+                aria-label="GitHub Repository"
+                title="GitHub"
+              >
+                <Github className="size-4" />
+              </a>
             </div>
           </header>
 
@@ -299,6 +310,21 @@ export function App() {
               </CardFooter>
             </Card>
           </section>
+
+          <footer className="mt-auto py-6 border-t border-muted/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <p>© {new Date().getFullYear()} Carta. Licensed under MIT.</p>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/45deg/carta"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+              >
+                <Github className="size-3.5" />
+                GitHub
+              </a>
+            </div>
+          </footer>
         </div>
       </main>
     )
