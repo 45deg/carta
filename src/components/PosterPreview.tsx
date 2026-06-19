@@ -7,7 +7,7 @@ import "@/styles/poster.css"
 type PosterPreviewProps = {
   poster: Poster
   baseFontSize: number
-  width: number
+  width: number | "fit"
 }
 
 export const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(
@@ -19,7 +19,7 @@ export const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(
         style={
           {
             "--poster-base-font-size": `${baseFontSize}px`,
-            "--poster-page-width": `${width}px`,
+            "--poster-page-width": width === "fit" ? "100%" : `${width}px`,
           } as CSSProperties
         }
       >

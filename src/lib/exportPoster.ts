@@ -154,7 +154,13 @@ export function savePosterHtml(node: HTMLElement, poster: Poster) {
 }
 
 export function printPoster() {
-  window.print()
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur()
+  }
+
+  window.setTimeout(() => {
+    window.print()
+  }, 0)
 }
 
 function escapeHtml(value: string) {

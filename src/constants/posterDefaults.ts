@@ -1,6 +1,19 @@
 import { type Poster } from "@/schema/posterSchema"
 
-export const posterWidthOptions = [720, 840, 960, 1080, 1200]
+export const posterFontSizeOptions = [
+  { label: "1", value: "1", size: 13 },
+  { label: "2", value: "2", size: 15 },
+  { label: "3", value: "3", size: 16 },
+  { label: "4", value: "4", size: 19 },
+  { label: "5", value: "5", size: 22 },
+] as const
+
+export const posterWidthOptions = [
+  { label: "最大", value: "max", width: "fit" },
+  { label: "大", value: "large", width: 1080 },
+  { label: "中", value: "medium", width: 960 },
+  { label: "小", value: "small", width: 840 },
+] as const
 
 export const samplePoster: Poster = {
   title: "分割統治法：構造・手順・計算量",

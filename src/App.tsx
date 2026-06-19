@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   printPoster,
   savePosterHtml,
@@ -38,11 +39,17 @@ import {
   type PosterValidationResult,
 } from "@/schema/posterSchema"
 import {
+  posterFontSizeOptions,
   posterWidthOptions,
   samplePoster,
 } from "@/constants/posterDefaults"
 
 const initialYaml = yaml.dump(samplePoster, { lineWidth: -1 })
+type PosterFontSizeValue = (typeof posterFontSizeOptions)[number]["value"]
+type PosterWidthValue = (typeof posterWidthOptions)[number]["value"]
+
+const defaultFontSizeValue: PosterFontSizeValue = "3"
+const defaultWidthValue: PosterWidthValue = "medium"
 
 export function App() {
   const [yamlText, setYamlText] = useState(initialYaml)
@@ -54,14 +61,24 @@ export function App() {
   const [poster, setPoster] = useState<Poster>(samplePoster)
   const [screen, setScreen] = useState<"workflow" | "output">("workflow")
   const [mode, setMode] = useState<"preview" | "edit">("preview")
-  const [baseFontSize, setBaseFontSize] = useState(16)
-  const [posterWidth, setPosterWidth] = useState(960)
+  const [fontSizeValue, setFontSizeValue] =
+    useState<PosterFontSizeValue>(defaultFontSizeValue)
+  const [widthValue, setWidthValue] =
+    useState<PosterWidthValue>(defaultWidthValue)
   const [isSaving, setIsSaving] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [copiedPrompt, setCopiedPrompt] = useState(false)
   const [exportError, setExportError] = useState<string | null>(null)
   const posterRef = useRef<HTMLDivElement>(null)
   const exportPosterRef = useRef<HTMLDivElement>(null)
+  const baseFontSize =
+    posterFontSizeOptions.find((option) => option.value === fontSizeValue)
+      ?.size ?? 16
+  const posterWidth =
+    posterWidthOptions.find((option) => option.value === widthValue)?.width ??
+    "fit"
+  const exportPosterWidth =
+    typeof posterWidth === "number" ? posterWidth : getFitScreenPosterWidth()
 
   useEffect(() => {
     let cancelled = false
@@ -113,8 +130,16 @@ export function App() {
 
   async function handleExport(format: ExportFormat) {
     const node = exportPosterRef.current
+    const htmlNode =
+      typeof posterWidth === "number"
+        ? exportPosterRef.current
+        : posterRef.current
+    const targetWidth =
+      typeof posterWidth === "number"
+        ? posterWidth
+        : getRenderedPosterWidth(posterRef.current)
 
-    if (!node) {
+    if (!node || !htmlNode) {
       return
     }
 
@@ -122,16 +147,20 @@ export function App() {
     setExportError(null)
     try {
       if (format === "png") {
-        await savePosterPng(node, poster, posterWidth)
+        await savePosterPng(node, poster, targetWidth)
       } else if (format === "svg") {
-        await savePosterSvg(node, poster, posterWidth)
+        await savePosterSvg(node, poster, targetWidth)
       } else if (format === "html") {
-        savePosterHtml(node, poster)
+        savePosterHtml(htmlNode, poster)
       } else {
         printPoster()
       }
     } catch (err) {
-      setExportError(err instanceof Error ? err.message : "エクスポート中にエラーが発生しました。")
+      setExportError(
+        err instanceof Error
+          ? err.message
+          : "エクスポート中にエラーが発生しました。"
+      )
     } finally {
       setIsSaving(false)
     }
@@ -142,9 +171,7 @@ export function App() {
       <main className="min-h-svh bg-muted/40 text-foreground">
         <div className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-4 p-4 sm:p-6">
           <header className="app-chrome flex flex-col gap-1">
-            <p className="text-sm font-medium text-muted-foreground">
-              Carta
-            </p>
+            <p className="text-sm font-medium text-muted-foreground">Carta</p>
             <h1 className="text-2xl font-semibold tracking-normal">
               構造化知識ポスタージェネレーター
             </h1>
@@ -177,7 +204,11 @@ export function App() {
                   variant="outline"
                   onClick={handleCopyPrompt}
                 >
-                  {copiedPrompt ? <CheckCircle2 className="size-4" /> : <Clipboard className="size-4" />}
+                  {copiedPrompt ? (
+                    <CheckCircle2 className="size-4" />
+                  ) : (
+                    <Clipboard className="size-4" />
+                  )}
                   {copiedPrompt ? "コピーしました" : "コピー"}
                 </Button>
               </CardFooter>
@@ -234,8 +265,15 @@ export function App() {
                 }
               >
                 <TabsList className="h-9">
-                  <TabsTrigger value="preview" className="px-3 text-xs sm:text-sm">プレビュー</TabsTrigger>
-                  <TabsTrigger value="edit" className="px-3 text-xs sm:text-sm">編集</TabsTrigger>
+                  <TabsTrigger
+                    value="preview"
+                    className="px-3 text-xs sm:text-sm"
+                  >
+                    プレビュー
+                  </TabsTrigger>
+                  <TabsTrigger value="edit" className="px-3 text-xs sm:text-sm">
+                    編集
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -248,7 +286,9 @@ export function App() {
                 onClick={() => setShowSettings(!showSettings)}
               >
                 設定
-                <ChevronDown className={`size-4 transition-transform ${showSettings ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  className={`size-4 transition-transform ${showSettings ? "rotate-180" : ""}`}
+                />
               </Button>
 
               <ExportDropdown
@@ -261,39 +301,66 @@ export function App() {
           </div>
 
           <div
-            className={`${showSettings ? "flex" : "hidden"
-              } md:flex flex-wrap items-center gap-x-6 gap-y-3 border-t md:border-t-0 pt-3 md:pt-0 border-muted mt-1 md:mt-0`}
+            className={`${
+              showSettings ? "flex" : "hidden"
+            } mt-1 flex-wrap items-center gap-x-6 gap-y-3 border-t border-muted pt-3 md:mt-0 md:flex md:border-t-0 md:pt-0`}
           >
-            <label className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2 text-sm">
               <span className="font-medium">Font size</span>
-              <input
-                type="range"
-                min="13"
-                max="22"
-                value={baseFontSize}
-                onChange={(event) => setBaseFontSize(Number(event.target.value))}
-                className="w-24 sm:w-28 accent-primary"
-              />
-              <span className="w-10 tabular-nums">{baseFontSize}px</span>
-            </label>
-
-            <label className="flex items-center gap-2 text-sm">
-              <span className="font-medium">幅</span>
-              <select
-                value={posterWidth}
-                onChange={(event) => setPosterWidth(Number(event.target.value))}
-                className="h-8 rounded-md border border-input bg-background px-2 text-xs shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              <ToggleGroup
+                aria-label="Font size"
+                value={[fontSizeValue]}
+                onValueChange={(values) => {
+                  const nextValue = values.at(-1) as
+                    | PosterFontSizeValue
+                    | undefined
+                  if (nextValue) {
+                    setFontSizeValue(nextValue)
+                  }
+                }}
               >
-                {posterWidthOptions.map((width) => (
-                  <option key={width} value={width}>
-                    {width}px
-                  </option>
+                {posterFontSizeOptions.map((option) => (
+                  <ToggleGroupItem
+                    key={option.value}
+                    value={option.value}
+                    size="sm"
+                    aria-label={`文字サイズ ${option.label}`}
+                  >
+                    {option.label}
+                  </ToggleGroupItem>
                 ))}
-              </select>
-            </label>
+              </ToggleGroup>
+            </div>
+
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">幅</span>
+              <ToggleGroup
+                aria-label="Poster width"
+                value={[widthValue]}
+                onValueChange={(values) => {
+                  const nextValue = values.at(-1) as
+                    | PosterWidthValue
+                    | undefined
+                  if (nextValue) {
+                    setWidthValue(nextValue)
+                  }
+                }}
+              >
+                {posterWidthOptions.map((option) => (
+                  <ToggleGroupItem
+                    key={option.value}
+                    value={option.value}
+                    size="sm"
+                    aria-label={`幅 ${option.label}`}
+                  >
+                    {option.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden items-center gap-2 md:flex">
             <ExportDropdown
               disabled={isSaving || !validation.ok}
               isSaving={isSaving}
@@ -304,15 +371,20 @@ export function App() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-4 p-4 lg:grid-cols-[minmax(0,1fr)]">
+      <div className="poster-output-page mx-auto grid w-full gap-4 p-4 lg:grid-cols-[minmax(0,1fr)]">
         {exportError ? (
           <Alert variant="destructive">
-            <div className="flex flex-wrap items-center justify-between gap-2 w-full">
+            <div className="flex w-full flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <TriangleAlert className="size-4" />
                 <AlertTitle>エクスポートエラー: {exportError}</AlertTitle>
               </div>
-              <Button type="button" size="xs" variant="outline" onClick={() => setExportError(null)}>
+              <Button
+                type="button"
+                size="xs"
+                variant="outline"
+                onClick={() => setExportError(null)}
+              >
                 閉じる
               </Button>
             </div>
@@ -348,7 +420,7 @@ export function App() {
             position: "fixed",
             left: "-9999px",
             top: "0",
-            width: `${posterWidth}px`,
+            width: `${exportPosterWidth}px`,
             pointerEvents: "none",
             opacity: 0,
             background: "#ffffff",
@@ -358,7 +430,7 @@ export function App() {
             ref={exportPosterRef}
             poster={poster}
             baseFontSize={baseFontSize}
-            width={posterWidth}
+            width={exportPosterWidth}
           />
         </div>
       </div>
@@ -366,5 +438,22 @@ export function App() {
   )
 }
 
+function getFitScreenPosterWidth() {
+  if (typeof window === "undefined") {
+    return 960
+  }
+
+  return Math.max(320, window.innerWidth - 32)
+}
+
+function getRenderedPosterWidth(node: HTMLElement | null) {
+  if (!node) {
+    return getFitScreenPosterWidth()
+  }
+
+  return Math.ceil(
+    node.getBoundingClientRect().width || getFitScreenPosterWidth()
+  )
+}
 
 export default App

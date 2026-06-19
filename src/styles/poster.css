@@ -1,5 +1,6 @@
 .poster-root {
   --poster-base-font-size: 16px;
+  --poster-print-font-size: 10.5pt;
   --poster-page-width: 960px;
   --poster-ink: #171717;
   --poster-muted: #767676;
@@ -561,31 +562,61 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm;
+    margin: 8mm;
   }
 
+  html,
   body {
     background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 194mm !important;
+    min-width: 194mm !important;
+    max-width: 194mm !important;
   }
 
   .app-chrome,
   .editor-pane,
-  .no-print {
+  .no-print,
+  [data-slot="dropdown-menu-positioner"],
+  [data-slot="dropdown-menu-content"] {
     display: none !important;
+  }
+
+  .poster-output-page {
+    display: block !important;
+    width: 194mm !important;
+    min-width: 194mm !important;
+    max-width: none !important;
+    inline-size: 194mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .poster-print-stage {
     display: block !important;
+    width: 194mm !important;
+    min-width: 194mm !important;
+    max-width: none !important;
+    inline-size: 194mm !important;
+    margin: 0 !important;
     padding: 0 !important;
     background: #fff !important;
+    overflow: visible !important;
   }
 
   .poster-root {
-    width: 100% !important;
+    --poster-base-font-size: var(--poster-print-font-size) !important;
+    width: 194mm !important;
+    min-width: 194mm !important;
     max-width: none !important;
+    inline-size: 194mm !important;
     margin: 0 !important;
     padding: 0 !important;
+    box-sizing: border-box !important;
     box-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .poster-card,

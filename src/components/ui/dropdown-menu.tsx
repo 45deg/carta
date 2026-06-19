@@ -33,7 +33,11 @@ function DropdownMenuContent({
 }: React.ComponentProps<typeof Menu.Popup>) {
   return (
     <Menu.Portal>
-      <Menu.Positioner sideOffset={6} className="z-50">
+      <Menu.Positioner
+        sideOffset={6}
+        data-slot="dropdown-menu-positioner"
+        className="z-50"
+      >
         <Menu.Popup
           data-slot="dropdown-menu-content"
           className={cn(
