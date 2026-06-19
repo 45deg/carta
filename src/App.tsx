@@ -27,7 +27,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { PROMPT_JA, PROMPT_EN } from "@/lib/prompt"
@@ -70,7 +69,7 @@ export function App() {
   }))
   const [poster, setPoster] = useState<Poster>(() => activeSamplePoster)
   const [screen, setScreen] = useState<"workflow" | "output">("workflow")
-  const [mode, setMode] = useState<"preview" | "edit">("preview")
+
   const [fontSizeValue, setFontSizeValue] =
     useState<PosterFontSizeValue>(defaultFontSizeValue)
   const [widthValue, setWidthValue] =
@@ -125,7 +124,6 @@ export function App() {
 
     setPoster(validation.poster)
     setScreen("output")
-    setMode("preview")
   }
 
   async function handleCopyPrompt() {
@@ -346,28 +344,6 @@ export function App() {
                 <ArrowLeft className="size-4" />
                 <span className="hidden sm:inline">{t("output.back")}</span>
               </Button>
-
-              <Tabs
-                value={mode}
-                onValueChange={(value) =>
-                  setMode(value === "edit" ? "edit" : "preview")
-                }
-              >
-                <TabsList className="h-10 p-1 rounded-xl">
-                  <TabsTrigger
-                    value="preview"
-                    className="h-8 px-4 text-sm rounded-lg"
-                  >
-                    {t("output.preview")}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="edit"
-                    className="h-8 px-4 text-sm rounded-lg"
-                  >
-                    {t("output.edit")}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
@@ -472,7 +448,7 @@ export function App() {
         </div>
       </header>
 
-      <div className="poster-output-page mx-auto grid w-full gap-4 p-4 lg:grid-cols-[minmax(0,1fr)]">
+      <div className="poster-output-page mx-auto w-full max-w-7xl p-4 flex flex-col gap-4">
         {exportError ? (
           <Alert variant="destructive">
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
@@ -492,18 +468,6 @@ export function App() {
           </Alert>
         ) : null}
 
-        {mode === "edit" ? (
-          <Card className="editor-pane flex min-h-[520px] flex-col">
-            <CardContent className="flex min-h-0 flex-1 flex-col pt-4">
-              <YamlEditor
-                value={yamlText}
-                onChange={handleYamlChange}
-                label={t("output.editorLabel")}
-              />
-              <ValidationPanel validation={validation} />
-            </CardContent>
-          </Card>
-        ) : null}
 
         <Suspense fallback={<div className="poster-print-stage min-h-[60vh]" />}>
           <section className="poster-print-stage overflow-auto">

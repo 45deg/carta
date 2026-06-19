@@ -12,14 +12,24 @@ type MarkdownRendererProps = {
   text: string
 }
 
+function normalizeDisplayMath(text: string) {
+  return text.replace(
+    /^([ \t]*)\$\$([^\n]*\S[^\n]*)\$\$[ \t]*$/gm,
+    (_match, indent: string, formula: string) =>
+      `${indent}$$\n${indent}${formula}\n${indent}$$`
+  )
+}
+
 export function MarkdownRenderer({ text }: MarkdownRendererProps) {
+  const normalizedText = normalizeDisplayMath(text)
+
   return (
     <div className="poster-markdown">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath, remarkCjkFriendly]}
         rehypePlugins={[rehypeKatex, rehypeHighlight]}
       >
-        {text}
+        {normalizedText}
       </ReactMarkdown>
     </div>
   )

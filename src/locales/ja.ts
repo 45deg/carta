@@ -17,8 +17,6 @@ export const jaResources = {
     },
     output: {
       back: "戻る",
-      preview: "プレビュー",
-      edit: "編集",
       settings: "設定",
       fontSize: "Font size",
       fontSizeAria: "文字サイズ {{label}}",
@@ -33,7 +31,6 @@ export const jaResources = {
       exportError: "エクスポートエラー: {{error}}",
       exportErrorDefault: "エクスポート中にエラーが発生しました。",
       close: "閉じる",
-      editorLabel: "YAML編集",
       language: "言語",
     },
     export: {

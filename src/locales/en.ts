@@ -17,8 +17,6 @@ export const enResources = {
     },
     output: {
       back: "Back",
-      preview: "Preview",
-      edit: "Edit",
       settings: "Settings",
       fontSize: "Font size",
       fontSizeAria: "Font size {{label}}",
@@ -33,7 +31,6 @@ export const enResources = {
       exportError: "Export Error: {{error}}",
       exportErrorDefault: "An error occurred during export.",
       close: "Close",
-      editorLabel: "Edit YAML",
       language: "Language",
     },
     export: {
