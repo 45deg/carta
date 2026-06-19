@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { lazy, Suspense, useEffect, useRef, useState } from "react"
 import {
   ArrowLeft,
   CheckCircle2,
@@ -12,7 +12,6 @@ import {
 
 import yaml from "js-yaml"
 import { YamlEditor } from "@/components/YamlEditor"
-import { PosterPreview } from "@/components/PosterPreview"
 import { StepNumber } from "@/components/StepNumber"
 import { ValidationPanel } from "@/components/ValidationPanel"
 import { ExportDropdown, type ExportFormat } from "@/components/ExportDropdown"
@@ -29,12 +28,6 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import {
-  printPoster,
-  savePosterHtml,
-  savePosterPng,
-  savePosterSvg,
-} from "@/lib/exportPoster"
 import { PROMPT } from "@/lib/prompt"
 import {
   parsePosterYaml,
@@ -53,6 +46,11 @@ type PosterWidthValue = (typeof posterWidthOptions)[number]["value"]
 
 const defaultFontSizeValue: PosterFontSizeValue = "3"
 const defaultWidthValue: PosterWidthValue = "medium"
+const PosterPreview = lazy(() =>
+  import("@/components/PosterPreview").then((module) => ({
+    default: module.PosterPreview,
+  }))
+)
 
 export function App() {
   const [yamlText, setYamlText] = useState(initialYaml)
@@ -149,6 +147,13 @@ export function App() {
     setIsSaving(true)
     setExportError(null)
     try {
+      const {
+        printPoster,
+        savePosterHtml,
+        savePosterPng,
+        savePosterSvg,
+      } = await import("@/lib/exportPoster")
+
       if (format === "png") {
         await savePosterPng(node, poster, targetWidth)
       } else if (format === "svg") {
@@ -438,35 +443,37 @@ export function App() {
           </Card>
         ) : null}
 
-        <section className="poster-print-stage overflow-auto">
-          <PosterPreview
-            ref={posterRef}
-            poster={poster}
-            baseFontSize={baseFontSize}
-            width={posterWidth}
-          />
-        </section>
+        <Suspense fallback={<div className="poster-print-stage min-h-[60vh]" />}>
+          <section className="poster-print-stage overflow-auto">
+            <PosterPreview
+              ref={posterRef}
+              poster={poster}
+              baseFontSize={baseFontSize}
+              width={posterWidth}
+            />
+          </section>
 
-        {/* エクスポート用の非表示ポスターコンテナ */}
-        <div
-          className="no-print"
-          style={{
-            position: "fixed",
-            left: "-9999px",
-            top: "0",
-            width: `${exportPosterWidth}px`,
-            pointerEvents: "none",
-            opacity: 0,
-            background: "#ffffff",
-          }}
-        >
-          <PosterPreview
-            ref={exportPosterRef}
-            poster={poster}
-            baseFontSize={baseFontSize}
-            width={exportPosterWidth}
-          />
-        </div>
+          {/* エクスポート用の非表示ポスターコンテナ */}
+          <div
+            className="no-print"
+            style={{
+              position: "fixed",
+              left: "-9999px",
+              top: "0",
+              width: `${exportPosterWidth}px`,
+              pointerEvents: "none",
+              opacity: 0,
+              background: "#ffffff",
+            }}
+          >
+            <PosterPreview
+              ref={exportPosterRef}
+              poster={poster}
+              baseFontSize={baseFontSize}
+              width={exportPosterWidth}
+            />
+          </div>
+        </Suspense>
       </div>
     </main>
   )

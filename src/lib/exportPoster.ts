@@ -1,5 +1,3 @@
-import { getFontEmbedCSS, toPng, toSvg } from "html-to-image"
-
 import { type Poster } from "@/schema/posterSchema"
 import posterCss from "@/styles/poster.css?raw"
 import { safeFileName } from "@/lib/safeFileName"
@@ -25,6 +23,7 @@ function downloadText(text: string, fileName: string, type: string) {
 }
 
 export async function savePosterPng(node: HTMLElement, poster: Poster, targetWidth: number) {
+  const { toPng } = await import("html-to-image")
   const dataUrl = await exportPosterImage(node, targetWidth, (exportNode, options) => {
     return toPng(exportNode, {
       ...options,
@@ -35,6 +34,7 @@ export async function savePosterPng(node: HTMLElement, poster: Poster, targetWid
 }
 
 export async function savePosterSvg(node: HTMLElement, poster: Poster, targetWidth: number) {
+  const { toSvg } = await import("html-to-image")
   const dataUrl = await exportPosterImage(node, targetWidth, toSvg)
   const svgText = await dataUrlToText(dataUrl)
   downloadBlob(
@@ -60,6 +60,7 @@ async function exportPosterImage(
     }
   ) => Promise<string>
 ) {
+  const { getFontEmbedCSS } = await import("html-to-image")
   const fontEmbedCSS = await getFontEmbedCSS(node)
   const rect = node.getBoundingClientRect()
   const width = targetWidth

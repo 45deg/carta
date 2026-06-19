@@ -1,5 +1,4 @@
 import { z } from "zod"
-import mermaid from "mermaid"
 import yaml from "js-yaml"
 
 export const posterColors = [
@@ -304,7 +303,7 @@ export async function parsePosterYaml(
 
 async function validateMermaidDiagrams(poster: Poster): Promise<string[]> {
   const issues: string[] = []
-  const checks: Promise<void>[] = []
+  const diagrams: Array<{ body: string; path: string }> = []
 
   function visitBlock(block: Block, path: string) {
     if (block.type === "columns") {
@@ -346,17 +345,25 @@ async function validateMermaidDiagrams(poster: Poster): Promise<string[]> {
       return
     }
 
-    checks.push(
-      mermaid
-        .parse(diagram.body)
-        .then(() => undefined)
-        .catch((caught) => {
-          issues.push(`- ${path}.body: ${formatError(caught)}`)
-        })
-    )
+    diagrams.push({ body: diagram.body, path })
   }
 
   poster.blocks.forEach((block, index) => visitBlock(block, `blocks.${index}`))
+
+  if (diagrams.length === 0) {
+    return issues
+  }
+
+  const { default: mermaid } = await import("mermaid")
+  const checks = diagrams.map(({ body, path }) =>
+    mermaid
+      .parse(body)
+      .then(() => undefined)
+      .catch((caught) => {
+        issues.push(`- ${path}.body: ${formatError(caught)}`)
+      })
+  )
+
   await Promise.all(checks)
 
   return issues

@@ -1,15 +1,9 @@
 import { type CSSProperties, useEffect, useId, useRef, useState } from "react"
-import mermaid from "mermaid"
-import embed, { type VisualizationSpec } from "vega-embed"
 import yaml from "js-yaml"
 
 import { type DiagramBlock as DiagramBlockType } from "@/schema/posterSchema"
 
-mermaid.initialize({
-  startOnLoad: false,
-  securityLevel: "strict",
-  theme: "base",
-})
+type VisualizationSpec = Record<string, unknown>
 
 type DiagramBlockProps = {
   block: DiagramBlockType
@@ -39,6 +33,14 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
     async function renderDiagram() {
       try {
         if (block.format === "mermaid") {
+          const { default: mermaid } = await import("mermaid")
+
+          mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: "strict",
+            theme: "base",
+          })
+
           const id = `mermaid-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`
           const result = await mermaid.render(id, block.body)
 
@@ -56,6 +58,7 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
           block.format === "vega_lite"
             ? withResponsiveVegaLiteSize(rawSpec, embedded)
             : rawSpec
+        const { default: embed } = await import("vega-embed")
 
         await embed(target, spec, {
           actions: false,

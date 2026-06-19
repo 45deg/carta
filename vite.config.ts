@@ -7,6 +7,9 @@ import { defineConfig, configDefaults } from "vitest/config"
 export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
+  build: {
+    chunkSizeWarningLimit: 800,
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
