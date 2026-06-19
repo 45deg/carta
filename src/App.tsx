@@ -219,10 +219,10 @@ export function App() {
                 {t("app.localOnly")}
               </span>
               <ToggleGroup
-                type="single"
-                value={i18n.resolvedLanguage || i18n.language}
+                value={[i18n.resolvedLanguage || i18n.language || "ja"]}
                 onValueChange={(val) => {
-                  if (val) handleLanguageChange(val)
+                  const nextLang = val[0]
+                  if (nextLang) handleLanguageChange(nextLang)
                 }}
                 className="h-8 p-0.5 rounded-lg border bg-background"
               >
