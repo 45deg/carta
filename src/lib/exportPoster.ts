@@ -147,7 +147,7 @@ export function savePosterHtml(node: HTMLElement, poster: Poster) {
     `<title>${escapeHtml(poster.title)}</title>`,
     "<style>",
     posterCssForHtmlExport(),
-    "body{margin:0;background:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#171717;}",
+    'body{margin:0;background:#fff;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#171717;}',
     ".poster-export-page{min-height:100vh;background:#fff;padding:24px;box-sizing:border-box;}",
     "</style>",
     "</head>",
