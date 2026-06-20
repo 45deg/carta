@@ -34,7 +34,7 @@ export function PosterCanvas({ children }: PosterCanvasProps) {
         panning={{ velocityDisabled: true }}
         doubleClick={{ disabled: true }}
         onInit={(ref) => {
-          window.requestAnimationFrame(() => fitToScreen(ref, setScale, 0))
+          window.requestAnimationFrame(() => fitToWidth(ref, setScale, 0))
         }}
         onTransform={(_, state) => setScale(state.scale)}
       >

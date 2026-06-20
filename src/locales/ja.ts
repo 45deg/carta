@@ -18,15 +18,15 @@ export const jaResources = {
     output: {
       back: "戻る",
       settings: "設定",
-      fontSize: "Font size",
+      fontSize: "文字サイズ",
       fontSizeAria: "文字サイズ {{label}}",
       fontSizeSelect: "文字サイズ",
       fontSizeOpen: "文字サイズの候補を開く",
       fontSizeEmpty: "候補がありません",
       fontSizeDecrease: "文字サイズを小さくする",
       fontSizeIncrease: "文字サイズを大きくする",
-      width: "1列幅",
-      widthAria: "1列幅 {{label}}",
+      width: "列幅",
+      widthAria: "列幅 {{label}}",
       columnCount: "列分割",
       columnCountAria: "列分割数 {{label}}",
       widthOptions: {
