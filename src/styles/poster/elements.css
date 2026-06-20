@@ -259,13 +259,4 @@
   font-size: 0.8em;
 }
 
-@media (max-width: 720px) {
-  .poster-flow[data-direction="horizontal"] .poster-flow-items {
-    grid-template-columns: 1fr;
-  }
 
-  .poster-list-definition {
-    grid-template-columns: 1fr;
-    gap: 0.2em;
-  }
-}

@@ -79,33 +79,4 @@
   width: 100% !important;
 }
 
-/* Responsive styles */
-@media (max-width: 720px) {
-  .poster-columns {
-    grid-template-columns: 1fr;
-  }
 
-  .poster-card-layout,
-  .poster-card-layout[data-variant="aside"] {
-    grid-template-columns: 1fr;
-  }
-
-  .poster-card-layout[data-variant="aside"] .poster-card-layout-column:last-child {
-    border-left: 0;
-    border-top: 3px solid var(--poster-card-accent, var(--poster-line));
-    padding-top: 0.85em;
-    padding-left: 0;
-  }
-
-  .poster-blocks[data-column-count="2"],
-  .poster-blocks[data-column-count="3"] {
-    display: grid;
-    column-count: 1;
-    gap: 1em;
-  }
-
-  .poster-blocks[data-column-count="2"] > *,
-  .poster-blocks[data-column-count="3"] > * {
-    margin-bottom: 0;
-  }
-}
