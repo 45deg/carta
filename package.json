@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "knip": "knip"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -20,6 +21,7 @@
     "@tailwindcss/vite": "^4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
     "i18next": "^26.3.1",
@@ -32,6 +34,7 @@
     "react-dom": "^19.2.6",
     "react-i18next": "^17.0.8",
     "react-markdown": "^10.1.0",
+    "react-zoom-pan-pinch": "^4.0.3",
     "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",
     "remark-cjk-friendly": "^2.2.0",
@@ -59,6 +62,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17",
     "jsdom": "^29.1.1",
+    "knip": "^6.17.1",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "~6",

@@ -20,12 +20,16 @@ export const jaResources = {
       settings: "設定",
       fontSize: "Font size",
       fontSizeAria: "文字サイズ {{label}}",
-      width: "幅",
-      widthAria: "幅 {{label}}",
+      fontSizeSelect: "文字サイズ",
+      fontSizeOpen: "文字サイズの候補を開く",
+      fontSizeEmpty: "候補がありません",
+      fontSizeDecrease: "文字サイズを小さくする",
+      fontSizeIncrease: "文字サイズを大きくする",
+      width: "1列幅",
+      widthAria: "1列幅 {{label}}",
       columnCount: "列分割",
       columnCountAria: "列分割数 {{label}}",
       widthOptions: {
-        max: "最大",
         large: "大",
         medium: "中",
         small: "小",
@@ -47,15 +51,21 @@ export const jaResources = {
     },
     validation: {
       success: "YAML/JSONは有効です。",
-      errorTitle: "この修正内容を再度AIに入力してYAML（またはJSON）を作り直させてください。",
+      errorTitle:
+        "この修正内容を再度AIに入力してYAML（またはJSON）を作り直させてください。",
       copyError: "エラーをコピー",
       copiedError: "コピーしました",
-      invalidSchemaPrefix: "以下のYAML/JSONは学習用構造化ポスターのスキーマに合っていません。",
-      invalidSchemaSuffix: "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。\n\n{{message}}\n\n注意: blocks は1件以上、columns.columns は再帰的な Block 配列、card.body の layout.columns は content 配列、type/color/format/variant は定義済みの値だけを使ってください。",
-      mermaidErrorPrefix: "以下のYAML/JSONにはMermaid図の構文エラーがあります。",
-      mermaidErrorSuffix: "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。\n\n{{message}}\n\n注意: MermaidのbodyにはMermaidコードのみを書き、Markdownコードフェンスや説明文を含めないでください。",
+      invalidSchemaPrefix:
+        "以下のYAML/JSONは学習用構造化ポスターのスキーマに合っていません。",
+      invalidSchemaSuffix:
+        "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。\n\n{{message}}\n\n注意: blocks は1件以上、columns.columns は再帰的な Block 配列、card.body の layout.columns は content 配列、type/color/format/variant は定義済みの値だけを使ってください。",
+      mermaidErrorPrefix:
+        "以下のYAML/JSONにはMermaid図の構文エラーがあります。",
+      mermaidErrorSuffix:
+        "次の検証エラーをすべて修正し、有効なYAMLまたはJSONのみを出力してください。\n\n{{message}}\n\n注意: MermaidのbodyにはMermaidコードのみを書き、Markdownコードフェンスや説明文を含めないでください。",
       parseErrorPrefix: "以下のYAML/JSONは構文として読み取れません。",
-      parseErrorSuffix: "構文エラーを修正し、学習用構造化ポスターのYAMLまたはJSONのみを出力してください。\n\n- YAML/JSON parse error: {{message}}",
+      parseErrorSuffix:
+        "構文エラーを修正し、学習用構造化ポスターのYAMLまたはJSONのみを出力してください。\n\n- YAML/JSON parse error: {{message}}",
     },
     diagram: {
       renderErrorTitle: "図を描画できませんでした",

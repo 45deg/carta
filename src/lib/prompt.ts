@@ -597,4 +597,3 @@ Always check before outputting.
 * "Elaborate": Add blocks, premises, examples, diagrams, tables, and warnings. Split topics into new blocks.
 `
 
-export const PROMPT = PROMPT_JA

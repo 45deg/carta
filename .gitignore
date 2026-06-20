@@ -30,3 +30,6 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 
+# Agents
+.agents
+skills-lock.json

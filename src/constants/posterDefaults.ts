@@ -1,15 +1,22 @@
 import { type Poster } from "@/schema/posterSchema"
 
 export const posterFontSizeOptions = [
-  { label: "1", value: "1", size: 13 },
-  { label: "2", value: "2", size: 15 },
-  { label: "3", value: "3", size: 16 },
-  { label: "4", value: "4", size: 19 },
-  { label: "5", value: "5", size: 22 },
+  { label: "10", value: "10", size: 10 },
+  { label: "11", value: "11", size: 11 },
+  { label: "12", value: "12", size: 12 },
+  { label: "13", value: "13", size: 13 },
+  { label: "14", value: "14", size: 14 },
+  { label: "15", value: "15", size: 15 },
+  { label: "16", value: "16", size: 16 },
+  { label: "18", value: "18", size: 18 },
+  { label: "20", value: "20", size: 20 },
+  { label: "22", value: "22", size: 22 },
+  { label: "24", value: "24", size: 24 },
+  { label: "28", value: "28", size: 28 },
+  { label: "32", value: "32", size: 32 },
 ] as const
 
 export const posterWidthOptions = [
-  { label: "最大", value: "max", width: "fit" },
   { label: "大", value: "large", width: 1080 },
   { label: "中", value: "medium", width: 960 },
   { label: "小", value: "small", width: 840 },
@@ -128,7 +135,7 @@ export const samplePosterJa: Poster = {
           type: "diagram",
           format: "mermaid",
           title: "分割と結合の全体像",
-          body: "flowchart TD\n  A[\"[5, 2, 4, 7]\"] --> B1[\"[5, 2]\"]\n  A --> B2[\"[4, 7]\"]\n  B1 --> C1[\"[5]\"]\n  B1 --> C2[\"[2]\"]\n  B2 --> C3[\"[4]\"]\n  B2 --> C4[\"[7]\"]\n  C1 --> D1[\"[2, 5]\"]\n  C2 --> D1\n  C3 --> D2[\"[4, 7]\"]\n  C4 --> D2\n  D1 --> E[\"[2, 4, 5, 7]\"]\n  D2 --> E",
+          body: 'flowchart TD\n  A["[5, 2, 4, 7]"] --> B1["[5, 2]"]\n  A --> B2["[4, 7]"]\n  B1 --> C1["[5]"]\n  B1 --> C2["[2]"]\n  B2 --> C3["[4]"]\n  B2 --> C4["[7]"]\n  C1 --> D1["[2, 5]"]\n  C2 --> D1\n  C3 --> D2["[4, 7]"]\n  C4 --> D2\n  D1 --> E["[2, 4, 5, 7]"]\n  D2 --> E',
           caption:
             "要素数が1になるまで分割し、整列済みの部分配列を下から順に結合します。",
         },
@@ -328,7 +335,7 @@ export const samplePosterEn: Poster = {
           type: "diagram",
           format: "mermaid",
           title: "Overall Flow of Divide & Combine",
-          body: "flowchart TD\n  A[\"[5, 2, 4, 7]\"] --> B1[\"[5, 2]\"]\n  A --> B2[\"[4, 7]\"]\n  B1 --> C1[\"[5]\"]\n  B1 --> C2[\"[2]\"]\n  B2 --> C3[\"[4]\"]\n  B2 --> C4[\"[7]\"]\n  C1 --> D1[\"[2, 5]\"]\n  C2 --> D1\n  C3 --> D2[\"[4, 7]\"]\n  C4 --> D2\n  D1 --> E[\"[2, 4, 5, 7]\"]\n  D2 --> E",
+          body: 'flowchart TD\n  A["[5, 2, 4, 7]"] --> B1["[5, 2]"]\n  A --> B2["[4, 7]"]\n  B1 --> C1["[5]"]\n  B1 --> C2["[2]"]\n  B2 --> C3["[4]"]\n  B2 --> C4["[7]"]\n  C1 --> D1["[2, 5]"]\n  C2 --> D1\n  C3 --> D2["[4, 7]"]\n  C4 --> D2\n  D1 --> E["[2, 4, 5, 7]"]\n  D2 --> E',
           caption:
             "Divide until array sizes are 1, then combine sorted sub-arrays bottom-up.",
         },
@@ -420,5 +427,3 @@ export const samplePosterEn: Poster = {
     },
   ],
 }
-
-export const samplePoster = samplePosterJa

@@ -1,5 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react"
 import {
+  AArrowDown,
+  AArrowUp,
   ArrowLeft,
   CheckCircle2,
   ChevronDown,
@@ -16,9 +18,18 @@ import { YamlEditor } from "@/components/YamlEditor"
 import { StepNumber } from "@/components/StepNumber"
 import { ValidationPanel } from "@/components/ValidationPanel"
 import { ExportDropdown, type ExportFormat } from "@/components/ExportDropdown"
+import { PosterCanvas } from "@/components/PosterCanvas"
 import { Github } from "@/assets/Github"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import {
   Card,
   CardContent,
@@ -44,10 +55,11 @@ import {
 } from "@/constants/posterDefaults"
 
 type PosterFontSizeValue = (typeof posterFontSizeOptions)[number]["value"]
+type PosterFontSizeOption = (typeof posterFontSizeOptions)[number]
 type PosterWidthValue = (typeof posterWidthOptions)[number]["value"]
 type PosterColumnCountValue = (typeof posterColumnCountOptions)[number]["value"]
 
-const defaultFontSizeValue: PosterFontSizeValue = "3"
+const defaultFontSizeValue: PosterFontSizeValue = "16"
 const defaultWidthValue: PosterWidthValue = "medium"
 const defaultColumnCountValue: PosterColumnCountValue = "1"
 const PosterPreview = lazy(() =>
@@ -56,7 +68,7 @@ const PosterPreview = lazy(() =>
   }))
 )
 
-export function App() {
+function App() {
   const { t, i18n } = useTranslation()
   const isEnglish = i18n.language?.startsWith("en")
   const activeSamplePoster = isEnglish ? samplePosterEn : samplePosterJa
@@ -90,12 +102,23 @@ export function App() {
       ?.size ?? 16
   const posterWidth =
     posterWidthOptions.find((option) => option.value === widthValue)?.width ??
-    "fit"
+    960
   const columnCount =
     posterColumnCountOptions.find((option) => option.value === columnCountValue)
       ?.count ?? 1
-  const exportPosterWidth =
-    typeof posterWidth === "number" ? posterWidth * columnCount : getFitScreenPosterWidth()
+  const exportPosterWidth = posterWidth * columnCount
+  const fontSizeIndex = posterFontSizeOptions.findIndex(
+    (option) => option.value === fontSizeValue
+  )
+  const canDecreaseFontSize = fontSizeIndex > 0
+  const canIncreaseFontSize = fontSizeIndex < posterFontSizeOptions.length - 1
+
+  const stepFontSize = (direction: -1 | 1) => {
+    const nextOption = posterFontSizeOptions[fontSizeIndex + direction]
+    if (nextOption) {
+      setFontSizeValue(nextOption.value)
+    }
+  }
 
   useEffect(() => {
     const node = posterRef.current
@@ -122,7 +145,8 @@ export function App() {
       if (rect.width > rect.height) {
         const style = document.createElement("style")
         style.id = "print-landscape-style"
-        style.innerHTML = "@media print { @page { size: A4 landscape !important; } }"
+        style.innerHTML =
+          "@media print { @page { size: A4 landscape !important; } }"
         document.head.appendChild(style)
       }
     }
@@ -192,14 +216,8 @@ export function App() {
 
   async function handleExport(format: ExportFormat) {
     const node = exportPosterRef.current
-    const htmlNode =
-      typeof posterWidth === "number"
-        ? exportPosterRef.current
-        : posterRef.current
-    const targetWidth =
-      typeof posterWidth === "number"
-        ? posterWidth * columnCount
-        : getRenderedPosterWidth(posterRef.current)
+    const htmlNode = exportPosterRef.current
+    const targetWidth = posterWidth * columnCount
 
     if (!node || !htmlNode) {
       return
@@ -208,12 +226,8 @@ export function App() {
     setIsSaving(true)
     setExportError(null)
     try {
-      const {
-        printPoster,
-        savePosterHtml,
-        savePosterPng,
-        savePosterSvg,
-      } = await import("@/lib/exportPoster")
+      const { printPoster, savePosterHtml, savePosterPng, savePosterSvg } =
+        await import("@/lib/exportPoster")
 
       if (format === "png") {
         await savePosterPng(node, poster, targetWidth)
@@ -226,9 +240,7 @@ export function App() {
       }
     } catch (err) {
       setExportError(
-        err instanceof Error
-          ? err.message
-          : t("output.exportErrorDefault")
+        err instanceof Error ? err.message : t("output.exportErrorDefault")
       )
     } finally {
       setIsSaving(false)
@@ -243,7 +255,11 @@ export function App() {
     const cleanEn = currentEnYaml.trim().replace(/\r\n/g, "\n")
 
     if (cleanText === cleanJa || cleanText === cleanEn) {
-      setYamlText(yaml.dump(lang === "en" ? samplePosterEn : samplePosterJa, { lineWidth: -1 }))
+      setYamlText(
+        yaml.dump(lang === "en" ? samplePosterEn : samplePosterJa, {
+          lineWidth: -1,
+        })
+      )
     }
     void i18n.changeLanguage(lang)
   }
@@ -254,20 +270,71 @@ export function App() {
         <div className="mx-auto flex min-h-svh w-full max-w-7xl flex-col gap-6 p-6 sm:p-8">
           <header className="app-chrome flex flex-col gap-2 md:flex-row md:items-center md:justify-between md:gap-4">
             <div className="flex flex-col gap-2">
-              <p className="text-base font-medium text-muted-foreground">{t("app.title")}</p>
-              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                <svg className="size-8 text-primary" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3.5" y="4.5" width="18" height="23" rx="3" transform="rotate(-12 12.5 16)" fill="currentColor" opacity="0.4" stroke="currentColor" stroke-width="1.5" />
-                  <rect x="10.5" y="4.5" width="18" height="23" rx="3" fill="currentColor" stroke="currentColor" stroke-width="1.5" />
-                  <line x1="14.5" y1="10.5" x2="24.5" y2="10.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
-                  <line x1="14.5" y1="16.5" x2="20.5" y2="16.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
-                  <line x1="14.5" y1="22.5" x2="22.5" y2="22.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+              <p className="text-base font-medium text-muted-foreground">
+                {t("app.title")}
+              </p>
+              <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight">
+                <svg
+                  className="size-8 text-primary"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    x="3.5"
+                    y="4.5"
+                    width="18"
+                    height="23"
+                    rx="3"
+                    transform="rotate(-12 12.5 16)"
+                    fill="currentColor"
+                    opacity="0.4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <rect
+                    x="10.5"
+                    y="4.5"
+                    width="18"
+                    height="23"
+                    rx="3"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1="14.5"
+                    y1="10.5"
+                    x2="24.5"
+                    y2="10.5"
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="14.5"
+                    y1="16.5"
+                    x2="20.5"
+                    y2="16.5"
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="14.5"
+                    y1="22.5"
+                    x2="22.5"
+                    y2="22.5"
+                    stroke="#ffffff"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </svg>
                 Carta
               </h1>
             </div>
-            <div className="flex flex-wrap items-center gap-3 mt-2 md:mt-0">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 border border-emerald-200/60 shadow-2xs dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50">
+            <div className="mt-2 flex flex-wrap items-center gap-3 md:mt-0">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/60 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-2xs dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400">
                 <GlobeOff className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                 {t("app.localOnly")}
               </span>
@@ -277,12 +344,18 @@ export function App() {
                   const nextLang = val[0]
                   if (nextLang) handleLanguageChange(nextLang)
                 }}
-                className="h-8 p-0.5 rounded-lg border bg-background"
+                className="h-8 rounded-lg border bg-background p-0.5"
               >
-                <ToggleGroupItem value="ja" className="h-6 px-2.5 text-xs rounded-md">
+                <ToggleGroupItem
+                  value="ja"
+                  className="h-6 rounded-md px-2.5 text-xs"
+                >
                   日本語
                 </ToggleGroupItem>
-                <ToggleGroupItem value="en" className="h-6 px-2.5 text-xs rounded-md">
+                <ToggleGroupItem
+                  value="en"
+                  className="h-6 rounded-md px-2.5 text-xs"
+                >
                   English
                 </ToggleGroupItem>
               </ToggleGroup>
@@ -290,7 +363,7 @@ export function App() {
                 href="https://github.com/45deg/carta"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center size-8 rounded-lg border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shadow-2xs"
+                className="inline-flex size-8 items-center justify-center rounded-lg border bg-background text-muted-foreground shadow-2xs transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="GitHub Repository"
                 title="GitHub"
               >
@@ -300,31 +373,35 @@ export function App() {
           </header>
 
           <section className="grid flex-1 gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <Card className="flex flex-col shadow-xs border-muted/60">
-              <CardHeader className="p-6 sm:p-8 pb-4">
+            <Card className="flex flex-col border-muted/60 shadow-xs">
+              <CardHeader className="p-6 pb-4 sm:p-8">
                 <div className="flex items-center gap-4">
                   <StepNumber value="1" />
-                  <CardTitle className="text-xl font-bold">{t("step1.title")}</CardTitle>
+                  <CardTitle className="text-xl font-bold">
+                    {t("step1.title")}
+                  </CardTitle>
                 </div>
-                <CardDescription className="text-base leading-relaxed mt-3">
+                <CardDescription className="mt-3 text-base leading-relaxed">
                   {t("step1.desc")}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-6 sm:px-8 pb-6 flex-1 flex flex-col">
-                <label className="flex flex-col gap-3 flex-1">
-                  <span className="text-base font-medium">{t("step1.prompt")}</span>
+              <CardContent className="flex flex-1 flex-col px-6 pb-6 sm:px-8">
+                <label className="flex flex-1 flex-col gap-3">
+                  <span className="text-base font-medium">
+                    {t("step1.prompt")}
+                  </span>
                   <Textarea
                     value={activePrompt}
                     readOnly
-                    className="min-h-96 resize-none bg-muted/50 font-mono text-sm leading-relaxed p-4 rounded-xl border-muted/80"
+                    className="min-h-96 resize-none rounded-xl border-muted/80 bg-muted/50 p-4 font-mono text-sm leading-relaxed"
                   />
                 </label>
               </CardContent>
-              <CardFooter className="px-6 sm:px-8 pb-6 sm:pb-8">
+              <CardFooter className="px-6 pb-6 sm:px-8 sm:pb-8">
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-10 px-4 text-sm gap-2"
+                  className="h-10 gap-2 px-4 text-sm"
                   onClick={handleCopyPrompt}
                 >
                   {copiedPrompt ? (
@@ -337,22 +414,24 @@ export function App() {
               </CardFooter>
             </Card>
 
-            <Card className="flex min-h-[600px] flex-col shadow-xs border-muted/60">
-              <CardHeader className="p-6 sm:p-8 pb-4">
+            <Card className="flex min-h-[600px] flex-col border-muted/60 shadow-xs">
+              <CardHeader className="p-6 pb-4 sm:p-8">
                 <div className="flex items-center gap-4">
                   <StepNumber value="2" />
-                  <CardTitle className="text-xl font-bold">{t("step2.title")}</CardTitle>
+                  <CardTitle className="text-xl font-bold">
+                    {t("step2.title")}
+                  </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="flex min-h-0 flex-1 flex-col px-6 sm:px-8 pb-6 gap-4">
+              <CardContent className="flex min-h-0 flex-1 flex-col gap-4 px-6 pb-6 sm:px-8">
                 <YamlEditor value={yamlText} onChange={handleYamlChange} />
                 <ValidationPanel validation={validation} />
               </CardContent>
-              <CardFooter className="justify-end px-6 sm:px-8 pb-6 sm:pb-8">
+              <CardFooter className="justify-end px-6 pb-6 sm:px-8 sm:pb-8">
                 <Button
                   type="button"
                   size="lg"
-                  className="h-12 px-6 text-base gap-2"
+                  className="h-12 gap-2 px-6 text-base"
                   disabled={!validation.ok}
                   onClick={handleOutput}
                 >
@@ -363,14 +442,14 @@ export function App() {
             </Card>
           </section>
 
-          <footer className="mt-auto py-6 border-t border-muted/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <footer className="mt-auto flex flex-col items-center justify-between gap-4 border-t border-muted/30 py-6 text-xs text-muted-foreground sm:flex-row">
             <p>© {new Date().getFullYear()} Carta. Licensed under MIT.</p>
             <div className="flex items-center gap-4">
               <a
                 href="https://github.com/45deg/carta"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
               >
                 <Github className="size-3.5" />
                 GitHub
@@ -392,7 +471,7 @@ export function App() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 px-4 text-sm gap-2"
+                className="h-10 gap-2 px-4 text-sm"
                 onClick={() => setScreen("workflow")}
               >
                 <ArrowLeft className="size-4" />
@@ -405,7 +484,7 @@ export function App() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 px-4 text-sm gap-2"
+                className="h-10 gap-2 px-4 text-sm"
                 onClick={() => setShowSettings(!showSettings)}
               >
                 {t("output.settings")}
@@ -419,7 +498,7 @@ export function App() {
                 isSaving={isSaving}
                 onExport={handleExport}
                 size="sm"
-                className="h-10 px-4 text-sm gap-2"
+                className="h-10 gap-2 px-4 text-sm"
                 icon={<FileDown className="size-4" />}
               />
             </div>
@@ -431,39 +510,49 @@ export function App() {
             } mt-1 flex-wrap items-center gap-x-6 gap-y-3 border-t border-muted pt-3 md:mt-0 md:flex md:border-t-0 md:pt-0`}
           >
             <div className="flex items-center gap-2 text-sm">
-              <span className="font-medium">{t("output.fontSize")}</span>
-              <ToggleGroup
-                aria-label="Font size"
-                className="h-10 p-1 rounded-xl"
-                value={[fontSizeValue]}
-                onValueChange={(values) => {
-                  const nextValue = values.at(-1) as
-                    | PosterFontSizeValue
-                    | undefined
-                  if (nextValue) {
-                    setFontSizeValue(nextValue)
-                  }
-                }}
-              >
-                {posterFontSizeOptions.map((option) => (
-                  <ToggleGroupItem
-                    key={option.value}
-                    value={option.value}
-                    size="sm"
-                    className="h-8 min-w-9 px-3 text-sm rounded-lg"
-                    aria-label={t("output.fontSizeAria", { label: option.label })}
-                  >
-                    {option.label}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+              <label className="font-medium" htmlFor="poster-font-size">
+                {t("output.fontSize")}
+              </label>
+              <div className="flex h-10 items-center overflow-hidden rounded-xl border border-border bg-background">
+                <FontSizeCombobox
+                  value={fontSizeValue}
+                  onValueChange={setFontSizeValue}
+                  selectLabel={t("output.fontSizeSelect")}
+                  emptyLabel={t("output.fontSizeEmpty")}
+                />
+                <div className="h-5 w-px bg-border" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="h-full rounded-none"
+                  title={t("output.fontSizeDecrease")}
+                  aria-label={t("output.fontSizeDecrease")}
+                  disabled={!canDecreaseFontSize}
+                  onClick={() => stepFontSize(-1)}
+                >
+                  <AArrowDown className="size-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="h-full rounded-none"
+                  title={t("output.fontSizeIncrease")}
+                  aria-label={t("output.fontSizeIncrease")}
+                  disabled={!canIncreaseFontSize}
+                  onClick={() => stepFontSize(1)}
+                >
+                  <AArrowUp className="size-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium">{t("output.width")}</span>
               <ToggleGroup
                 aria-label="Poster width"
-                className="h-10 p-1 rounded-xl"
+                className="h-10 rounded-xl p-1"
                 value={[widthValue]}
                 onValueChange={(values) => {
                   const nextValue = values.at(-1) as
@@ -479,8 +568,10 @@ export function App() {
                     key={option.value}
                     value={option.value}
                     size="sm"
-                    className="h-8 min-w-12 px-3.5 text-sm rounded-lg"
-                    aria-label={t("output.widthAria", { label: t(`output.widthOptions.${option.value}`) })}
+                    className="h-8 min-w-12 rounded-lg px-3.5 text-sm"
+                    aria-label={t("output.widthAria", {
+                      label: t(`output.widthOptions.${option.value}`),
+                    })}
                   >
                     {t(`output.widthOptions.${option.value}`)}
                   </ToggleGroupItem>
@@ -492,7 +583,7 @@ export function App() {
               <span className="font-medium">{t("output.columnCount")}</span>
               <ToggleGroup
                 aria-label="Column count"
-                className="h-10 p-1 rounded-xl"
+                className="h-10 rounded-xl p-1"
                 value={[columnCountValue]}
                 onValueChange={(values) => {
                   const nextValue = values.at(-1) as
@@ -508,8 +599,10 @@ export function App() {
                     key={option.value}
                     value={option.value}
                     size="sm"
-                    className="h-8 min-w-9 px-3 text-sm rounded-lg"
-                    aria-label={t("output.columnCountAria", { label: option.label })}
+                    className="h-8 min-w-9 rounded-lg px-3 text-sm"
+                    aria-label={t("output.columnCountAria", {
+                      label: option.label,
+                    })}
                   >
                     {option.label}
                   </ToggleGroupItem>
@@ -524,20 +617,22 @@ export function App() {
               isSaving={isSaving}
               onExport={handleExport}
               size="sm"
-              className="h-10 px-4 text-sm gap-2"
+              className="h-10 gap-2 px-4 text-sm"
               icon={<FileDown className="size-4" />}
             />
           </div>
         </div>
       </header>
 
-      <div className="poster-output-page p-4 flex flex-col gap-4">
+      <div className="poster-output-page flex flex-col gap-4 p-4">
         {exportError ? (
           <Alert variant="destructive">
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <TriangleAlert className="size-4" />
-                <AlertTitle>{t("output.exportError", { error: exportError })}</AlertTitle>
+                <AlertTitle>
+                  {t("output.exportError", { error: exportError })}
+                </AlertTitle>
               </div>
               <Button
                 type="button"
@@ -551,9 +646,10 @@ export function App() {
           </Alert>
         ) : null}
 
-
-        <Suspense fallback={<div className="poster-print-stage min-h-[60vh]" />}>
-          <section className="poster-print-stage overflow-auto">
+        <Suspense
+          fallback={<div className="poster-print-stage min-h-[60vh]" />}
+        >
+          <PosterCanvas resetKey={`${widthValue}-${columnCountValue}`}>
             <PosterPreview
               ref={posterRef}
               poster={poster}
@@ -561,7 +657,7 @@ export function App() {
               width={posterWidth}
               columnCount={columnCount}
             />
-          </section>
+          </PosterCanvas>
 
           {/* エクスポート用の非表示ポスターコンテナ */}
           <div
@@ -580,7 +676,7 @@ export function App() {
               ref={exportPosterRef}
               poster={poster}
               baseFontSize={baseFontSize}
-              width={exportPosterWidth}
+              width={posterWidth}
               columnCount={columnCount}
             />
           </div>
@@ -590,21 +686,50 @@ export function App() {
   )
 }
 
-function getFitScreenPosterWidth() {
-  if (typeof window === "undefined") {
-    return 960
-  }
+function FontSizeCombobox({
+  value,
+  onValueChange,
+  selectLabel,
+  emptyLabel,
+}: {
+  value: PosterFontSizeValue
+  onValueChange: (value: PosterFontSizeValue) => void
+  selectLabel: string
+  emptyLabel: string
+}) {
+  const selectedOption =
+    posterFontSizeOptions.find((option) => option.value === value) ??
+    posterFontSizeOptions[0]
 
-  return Math.max(320, window.innerWidth - 32)
-}
-
-function getRenderedPosterWidth(node: HTMLElement | null) {
-  if (!node) {
-    return getFitScreenPosterWidth()
-  }
-
-  return Math.ceil(
-    node.getBoundingClientRect().width || getFitScreenPosterWidth()
+  return (
+    <Combobox<PosterFontSizeOption>
+      items={posterFontSizeOptions}
+      value={selectedOption}
+      itemToStringLabel={(option) => option.label}
+      itemToStringValue={(option) => option.value}
+      isItemEqualToValue={(option, selected) => option.value === selected.value}
+      onValueChange={(option) => {
+        if (option) {
+          onValueChange(option.value)
+        }
+      }}
+    >
+      <ComboboxInput
+        id="poster-font-size"
+        aria-label={selectLabel}
+        className="h-full w-24 border-0 bg-background shadow-none"
+      />
+      <ComboboxContent>
+        <ComboboxEmpty>{emptyLabel}</ComboboxEmpty>
+        <ComboboxList>
+          {(option: PosterFontSizeOption) => (
+            <ComboboxItem key={option.value} value={option}>
+              {option.label}
+            </ComboboxItem>
+          )}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
   )
 }
 

@@ -2,7 +2,7 @@ import { z } from "zod"
 import yaml from "js-yaml"
 import i18n from "i18next"
 
-export const posterColors = [
+const posterColors = [
   "danger",
   "important",
   "default",
@@ -14,11 +14,10 @@ export const posterColors = [
   "note",
 ] as const
 
-export const diagramFormats = ["mermaid", "vega_lite"] as const
-export const flowVariants = ["steps", "timeline"] as const
-export const flowDirections = ["horizontal", "vertical"] as const
-export const listVariants = ["bullets", "checklist", "definitions"] as const
-export const layoutVariants = ["side_by_side", "aside"] as const
+const flowVariants = ["steps", "timeline"] as const
+const flowDirections = ["horizontal", "vertical"] as const
+const listVariants = ["bullets", "checklist", "definitions"] as const
+const layoutVariants = ["side_by_side", "aside"] as const
 
 const vegaLiteBodySchema = z.union([z.string(), z.record(z.string(), z.unknown())]).refine((value) => value !== undefined, {
   message: "diagram.body is required",
@@ -131,7 +130,7 @@ const blockSchema: z.ZodTypeAny = z.lazy(() =>
   ])
 )
 
-export const posterSchema: z.ZodType<Poster> = z.object({
+const posterSchema: z.ZodType<Poster> = z.object({
   title: z.string().min(1, "title is required"),
   description: z.string().min(1, "description is required"),
   blocks: z.array(blockSchema as z.ZodType<Block>).min(1, "blocks must have at least 1 item"),
@@ -157,19 +156,19 @@ export type CardContent =
   | FlowBlock
   | ListBlock
   | LayoutContent
-export type MarkdownContent = {
+type MarkdownContent = {
   type: "markdown"
   text: string
 }
-export type DiagramContent = MermaidDiagramContent | VegaLiteDiagramContent
-export type MermaidDiagramContent = {
+type DiagramContent = MermaidDiagramContent | VegaLiteDiagramContent
+type MermaidDiagramContent = {
   type: "diagram"
   format: "mermaid"
   width?: number
   body: string
   caption: string
 }
-export type VegaLiteDiagramContent = {
+type VegaLiteDiagramContent = {
   type: "diagram"
   format: "vega_lite"
   width?: number
@@ -182,7 +181,7 @@ export type ColumnsBlock = {
   columns: Block[]
 }
 export type DiagramBlock = MermaidDiagramBlock | VegaLiteDiagramBlock
-export type MermaidDiagramBlock = {
+type MermaidDiagramBlock = {
   type: "diagram"
   format: "mermaid"
   title?: string
@@ -190,7 +189,7 @@ export type MermaidDiagramBlock = {
   body: string
   caption: string
 }
-export type VegaLiteDiagramBlock = {
+type VegaLiteDiagramBlock = {
   type: "diagram"
   format: "vega_lite"
   title?: string
@@ -205,7 +204,7 @@ export type FlowBlock = {
   direction?: FlowDirection
   items: FlowItem[]
 }
-export type FlowItem = {
+type FlowItem = {
   title: string
   body: string
 }
@@ -215,24 +214,23 @@ export type ListBlock = {
   variant?: ListVariant
   items: ListItem[]
 }
-export type ListItem = {
+type ListItem = {
   term?: string
   body: string
   checked?: boolean
 }
-export type LayoutContent = {
+type LayoutContent = {
   type: "layout"
   variant: LayoutVariant
   size?: number[]
   columns: CardContent[][]
 }
 export type PosterColor = (typeof posterColors)[number]
-export type DiagramFormat = (typeof diagramFormats)[number]
-export type FlowVariant = (typeof flowVariants)[number]
-export type FlowDirection = (typeof flowDirections)[number]
-export type ListVariant = (typeof listVariants)[number]
-export type LayoutVariant = (typeof layoutVariants)[number]
-export type VegaLiteBody = unknown
+type FlowVariant = (typeof flowVariants)[number]
+type FlowDirection = (typeof flowDirections)[number]
+type ListVariant = (typeof listVariants)[number]
+type LayoutVariant = (typeof layoutVariants)[number]
+type VegaLiteBody = unknown
 
 export type PosterValidationResult =
   | { ok: true; poster: Poster; message: string }

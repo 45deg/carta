@@ -128,3 +128,104 @@
     @apply font-sans;
     }
 }
+
+.poster-output-page {
+  min-height: calc(100svh - 65px);
+}
+
+.poster-canvas {
+  position: relative;
+  height: calc(100svh - 97px);
+  min-height: 28rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background-color: oklch(0.972 0.003 325.6);
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--muted-foreground) 34%, transparent) 1px,
+    transparent 1.15px
+  );
+  background-size: 18px 18px;
+}
+
+.poster-canvas-viewport {
+  width: 100% !important;
+  height: 100% !important;
+  cursor: grab;
+}
+
+.poster-canvas-viewport:active {
+  cursor: grabbing;
+}
+
+.poster-canvas-content {
+  padding: 3rem;
+}
+
+.poster-zoom-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.5rem;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in oklch, var(--border) 86%, transparent);
+  border-radius: 999px;
+  padding: 0.25rem;
+  background: color-mix(in oklch, var(--background) 94%, transparent);
+  box-shadow: 0 12px 34px
+    color-mix(in oklch, var(--foreground) 16%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.poster-zoom-value {
+  min-width: 3.3rem;
+  padding: 0 0.25rem;
+  color: var(--foreground);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .poster-output-page {
+    min-height: calc(100svh - 73px);
+    padding: 0.75rem;
+  }
+
+  .poster-canvas {
+    height: calc(100svh - 97px);
+    min-height: 24rem;
+  }
+
+  .poster-canvas-content {
+    padding: 1.5rem;
+  }
+
+  .poster-zoom-controls {
+    bottom: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    overflow-x: auto;
+  }
+}
+
+@media print {
+  .poster-canvas,
+  .poster-canvas-viewport,
+  .poster-canvas-content {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    transform: none !important;
+  }
+}
