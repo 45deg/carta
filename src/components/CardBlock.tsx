@@ -55,7 +55,7 @@ export function CardBlock({ block }: CardBlockProps) {
       <div className="poster-card-heading">
         {iconName ? (
           <span className="poster-card-icon">
-            <DynamicIcon name={iconName} className="size-5" />
+            <DynamicIcon name={iconName} />
           </span>
         ) : block.emoji ? (
           <span className="poster-card-emoji">{block.emoji}</span>

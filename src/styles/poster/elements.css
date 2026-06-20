@@ -5,7 +5,7 @@
   border-top: 4px solid var(--poster-card-accent, var(--poster-line));
   border-radius: 4px;
   background: #ffffff;
-  padding: 1rem 1.15rem;
+  padding: 1em 1.15em;
 }
 
 .poster-flow[data-embedded="true"],
@@ -13,12 +13,12 @@
   border: 0;
   border-top: 0;
   background: transparent;
-  padding: 0.25rem 0 0;
+  padding: 0.25em 0 0;
 }
 
 .poster-flow-title,
 .poster-list-title {
-  margin: 0 0 0.7rem;
+  margin: 0 0 0.7em;
   color: var(--poster-card-accent, var(--poster-ink));
   font-size: 1.08em;
   font-weight: 800;
@@ -36,31 +36,31 @@
 
 .poster-flow-items {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.75em;
 }
 
 .poster-flow[data-direction="horizontal"] .poster-flow-items {
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(10em, 1fr));
 }
 
 .poster-flow-item {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.65rem;
+  gap: 0.65em;
   min-width: 0;
   border: 1px solid var(--poster-card-border, var(--poster-line));
   border-radius: 4px;
-  padding: 0.75rem;
+  padding: 0.75em;
   background: #ffffff;
 }
 
 .poster-flow[data-direction="vertical"] .poster-flow-item:not(:last-child)::after {
   content: "";
   position: absolute;
-  bottom: -0.75rem;
-  left: 1.32rem;
-  height: 0.75rem;
+  bottom: -0.75em;
+  left: 1.32em;
+  height: 0.75em;
   border-left: 2px solid var(--poster-card-accent, var(--poster-line));
 }
 
@@ -72,8 +72,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.73em;
+  height: 1.73em;
   border-radius: 999px;
   background: var(--poster-card-accent, var(--poster-ink));
   color: var(--poster-card-accent-text, #ffffff);
@@ -87,7 +87,7 @@
 }
 
 .poster-flow-content h4 {
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.25em;
   color: var(--poster-card-accent, var(--poster-ink));
   font-size: 0.98em;
   font-weight: 800;
@@ -97,15 +97,15 @@
 
 .poster-list-items {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.55em;
 }
 
 .poster-list-item {
   display: grid;
   min-width: 0;
-  gap: 0.45rem;
+  gap: 0.45em;
   border-bottom: 1px solid color-mix(in srgb, var(--poster-card-border, var(--poster-line)) 38%, transparent);
-  padding-bottom: 0.55rem;
+  padding-bottom: 0.55em;
 }
 
 .poster-list-item:last-child {
@@ -115,16 +115,16 @@
 
 .poster-list[data-variant="bullets"] .poster-list-item {
   position: relative;
-  padding-left: 1rem;
+  padding-left: 1em;
 }
 
 .poster-list[data-variant="bullets"] .poster-list-item::before {
   content: "";
   position: absolute;
-  top: 0.72rem;
+  top: 0.72em;
   left: 0;
-  width: 0.42rem;
-  height: 0.42rem;
+  width: 0.42em;
+  height: 0.42em;
   border-radius: 999px;
   background: var(--poster-card-accent, var(--poster-ink));
 }
@@ -138,24 +138,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.2rem;
-  height: 1.2rem;
-  margin-top: 0.2rem;
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.2em;
   border: 1px solid var(--poster-card-accent, var(--poster-line));
   border-radius: 4px;
   color: var(--poster-card-accent, var(--poster-ink));
 }
 
 .poster-list-check svg {
-  width: 0.82rem;
-  height: 0.82rem;
+  width: 0.82em;
+  height: 0.82em;
   stroke-width: 2.5;
 }
 
 .poster-list-definition {
   display: grid;
-  grid-template-columns: minmax(4.5rem, 0.42fr) minmax(0, 1fr);
-  gap: 0.55rem;
+  grid-template-columns: minmax(4.5em, 0.42fr) minmax(0, 1fr);
+  gap: 0.55em;
 }
 
 .poster-inline-markdown {
@@ -181,18 +181,18 @@
   border-top: 4px solid var(--poster-card-accent, var(--poster-line));
   border-radius: 4px;
   background: #fff;
-  padding: 1rem 1.15rem;
+  padding: 1em 1.15em;
 }
 
 .poster-diagram[data-embedded="true"] {
   border: 0;
   border-top: 0;
   background: transparent;
-  padding: 0.45rem 0 0;
+  padding: 0.45em 0 0;
 }
 
 .poster-diagram-title {
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.55em;
   color: var(--poster-card-accent, var(--poster-ink));
   font-size: 1.18em;
   font-weight: 800;
@@ -234,7 +234,7 @@
 }
 
 .poster-diagram figcaption {
-  margin-top: 0.55rem;
+  margin-top: 0.55em;
   color: var(--poster-muted);
   font-size: 0.86em;
 }
@@ -243,7 +243,7 @@
   border: 1px solid #ff8082;
   border-radius: 8px;
   background: #fff4f2;
-  padding: 0.75rem;
+  padding: 0.75em;
   color: #8b1a10;
 }
 
@@ -266,6 +266,6 @@
 
   .poster-list-definition {
     grid-template-columns: 1fr;
-    gap: 0.2rem;
+    gap: 0.2em;
   }
 }

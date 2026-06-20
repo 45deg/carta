@@ -96,12 +96,12 @@
   .poster-blocks[data-column-count="3"] {
     display: block !important;
     column-count: var(--poster-column-count, 1) !important;
-    column-gap: 1rem !important;
+    column-gap: 1em !important;
   }
   .poster-blocks[data-column-count="2"] > *,
   .poster-blocks[data-column-count="3"] > * {
     break-inside: avoid !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 1em !important;
     width: 100% !important;
   }
 
@@ -110,7 +110,7 @@
   }
 
   .poster-flow[data-direction="horizontal"] .poster-flow-items {
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)) !important;
+    grid-template-columns: repeat(auto-fit, minmax(10em, 1fr)) !important;
   }
 
   .poster-card-layout {
@@ -118,18 +118,18 @@
   }
 
   .poster-card-layout[data-variant="aside"] {
-    grid-template-columns: minmax(0, 1.35fr) minmax(12rem, 0.65fr) !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(12em, 0.65fr) !important;
   }
 
   .poster-card-layout[data-variant="aside"] .poster-card-layout-column:last-child {
     border-top: 0 !important;
     border-left: 3px solid var(--poster-card-accent, var(--poster-line)) !important;
     padding-top: 0 !important;
-    padding-left: 0.85rem !important;
+    padding-left: 0.85em !important;
   }
 
   .poster-list-definition {
-    grid-template-columns: minmax(4.5rem, 0.42fr) minmax(0, 1fr) !important;
+    grid-template-columns: minmax(4.5em, 0.42fr) minmax(0, 1fr) !important;
   }
 
   .poster-card,

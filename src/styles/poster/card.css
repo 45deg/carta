@@ -24,7 +24,7 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  min-width: 1.25rem;
+  min-width: 1.25em;
   color: currentColor;
   font-size: 1.05em;
   font-weight: 800;
@@ -36,8 +36,13 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  min-width: 1.25rem;
+  min-width: 1.25em;
   color: currentColor;
+}
+
+.poster-card-icon svg {
+  width: 1.25em;
+  height: 1.25em;
 }
 
 .poster-card h2 {
