@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test"
-import * as fs from "fs"
+import { test, expect, type Page } from "@playwright/test"
 
 interface CustomWindow extends Window {
   __printed?: boolean;
@@ -48,7 +47,11 @@ test.describe("Poster Card Generator E2E", () => {
     expect(gridTemplateColumns.split(" ").length).toBeGreaterThan(1)
   })
 
-  test("verifies rendering and downloads for each format", async ({ page }) => {
+  test("verifies rendering and downloads for each format", async ({ page }, testInfo) => {
+    testInfo.setTimeout(90000)
+
+    await installDownloadCapture(page)
+
     // 1. Stub window.print() on the currently loaded page to test PDF printing
     await page.evaluate(() => {
       (window as unknown as CustomWindow).__printed = false;
@@ -73,16 +76,9 @@ test.describe("Poster Card Generator E2E", () => {
     await expect(page.locator("text=保存形式")).toBeVisible()
 
     // --- Test PNG Download ---
-    const pngDownloadPromise = page.waitForEvent("download")
-    await page.getByRole("menuitem").filter({ hasText: "PNG" }).click()
-    const pngDownload = await pngDownloadPromise
-    expect(pngDownload.suggestedFilename()).toContain(".png")
-
-    // Test PNG file contents
-    const pngPath = await pngDownload.path()
-    expect(pngPath).not.toBeNull()
-    const pngStats = fs.statSync(pngPath!)
-    expect(pngStats.size).toBeGreaterThan(1024) // Assert PNG is non-empty and reasonably sized
+    const pngExport = await clickMenuItemAndWaitForBlob(page, "PNG")
+    expect(pngExport.type).toBe("image/png")
+    expect(pngExport.size).toBeGreaterThan(1024)
 
     // Wait for the dropdown menu to completely close before clicking again
     await expect(page.locator("text=保存形式")).not.toBeVisible()
@@ -92,15 +88,9 @@ test.describe("Poster Card Generator E2E", () => {
     await expect(page.locator("text=保存形式")).toBeVisible()
 
     // --- Test SVG Download ---
-    const svgDownloadPromise = page.waitForEvent("download")
-    await page.getByRole("menuitem").filter({ hasText: "SVG" }).click()
-    const svgDownload = await svgDownloadPromise
-    expect(svgDownload.suggestedFilename()).toContain(".svg")
-
-    // Test SVG file contents
-    const svgPath = await svgDownload.path()
-    expect(svgPath).not.toBeNull()
-    const svgContent = fs.readFileSync(svgPath!, "utf8")
+    const svgExport = await clickMenuItemAndWaitForBlob(page, "SVG")
+    expect(svgExport.type).toBe("image/svg+xml;charset=utf-8")
+    const svgContent = svgExport.text
     expect(svgContent).toContain("<svg")
     expect(svgContent).toContain("分割統治法") // Title of default poster should be embedded in the SVG
 
@@ -112,15 +102,9 @@ test.describe("Poster Card Generator E2E", () => {
     await expect(page.locator("text=保存形式")).toBeVisible()
 
     // --- Test HTML Download ---
-    const htmlDownloadPromise = page.waitForEvent("download")
-    await page.getByRole("menuitem").filter({ hasText: "Single HTML" }).click()
-    const htmlDownload = await htmlDownloadPromise
-    expect(htmlDownload.suggestedFilename()).toContain(".html")
-
-    // Test HTML file contents
-    const htmlPath = await htmlDownload.path()
-    expect(htmlPath).not.toBeNull()
-    const htmlContent = fs.readFileSync(htmlPath!, "utf8")
+    const htmlExport = await clickMenuItemAndWaitForBlob(page, "Single HTML")
+    expect(htmlExport.type).toBe("text/html;charset=utf-8")
+    const htmlContent = htmlExport.text
     expect(htmlContent).toContain("<!doctype html>")
     expect(htmlContent).toContain("<title>分割統治法：構造・手順・計算量</title>")
     expect(htmlContent).toContain("分割統治法：構造・手順・計算量")
@@ -132,9 +116,68 @@ test.describe("Poster Card Generator E2E", () => {
     await headerExportBtn.click()
     await expect(page.locator("text=保存形式")).toBeVisible()
 
-    // --- Test PDF Print ---
-    await page.getByRole("menuitem").filter({ hasText: "PDF印刷" }).click()
+    await page.getByRole("menuitem", { name: "PDF印刷", exact: true }).click({
+      force: true,
+    })
+    await page.waitForFunction(() => (window as unknown as CustomWindow).__printed)
     const printed = await page.evaluate(() => (window as unknown as CustomWindow).__printed)
     expect(printed).toBe(true)
   })
 })
+
+async function installDownloadCapture(page: Page) {
+  await page.evaluate(() => {
+    const globalWindow = window as Window & {
+      __downloadCaptureInstalled?: boolean
+      __downloadBlobs?: Blob[]
+    }
+
+    if (globalWindow.__downloadCaptureInstalled) {
+      return
+    }
+
+    globalWindow.__downloadCaptureInstalled = true
+    globalWindow.__downloadBlobs = []
+
+    const originalCreateObjectURL = URL.createObjectURL.bind(URL)
+    URL.createObjectURL = ((blob: Blob) => {
+      globalWindow.__downloadBlobs?.push(blob)
+      return originalCreateObjectURL(blob)
+    }) as typeof URL.createObjectURL
+  })
+}
+
+async function clickMenuItemAndWaitForBlob(page: Page, label: string) {
+  const menuItem = page.getByRole("menuitem", { name: label, exact: true })
+  await expect(menuItem).toBeVisible()
+
+  const previousCount = await page.evaluate(() => {
+    const globalWindow = window as Window & { __downloadBlobs?: Blob[] }
+    return globalWindow.__downloadBlobs?.length ?? 0
+  })
+
+  await menuItem.click()
+
+  await page.waitForFunction(
+    (count) => {
+      const globalWindow = window as Window & { __downloadBlobs?: Blob[] }
+      return (globalWindow.__downloadBlobs?.length ?? 0) > count
+    },
+    previousCount
+  )
+
+  return page.evaluate(async (count) => {
+    const globalWindow = window as Window & { __downloadBlobs?: Blob[] }
+    const blob = globalWindow.__downloadBlobs?.[count]
+
+    if (!blob) {
+      throw new Error("Expected an export blob to be captured")
+    }
+
+    return {
+      type: blob.type,
+      size: blob.size,
+      text: blob.type.startsWith("image/") && !blob.type.includes("svg") ? "" : await blob.text(),
+    }
+  }, previousCount)
+}

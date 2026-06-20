@@ -8,13 +8,16 @@ function downloadDataUrl(dataUrl: string, fileName: string) {
   const link = document.createElement("a")
   link.download = fileName
   link.href = dataUrl
+  link.style.display = "none"
+  document.body.appendChild(link)
   link.click()
+  link.remove()
 }
 
 function downloadBlob(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob)
   downloadDataUrl(url, fileName)
-  URL.revokeObjectURL(url)
+  window.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
 function downloadText(text: string, fileName: string, type: string) {
@@ -30,7 +33,7 @@ export async function savePosterPng(node: HTMLElement, poster: Poster, targetWid
       pixelRatio: 2,
     })
   })
-  downloadDataUrl(dataUrl, safeFileName(poster.title, "png"))
+  downloadBlob(await dataUrlToBlob(dataUrl), safeFileName(poster.title, "png"))
 }
 
 export async function savePosterSvg(node: HTMLElement, poster: Poster, targetWidth: number) {
@@ -109,6 +112,11 @@ async function exportPosterImage(
 async function dataUrlToText(dataUrl: string) {
   const response = await fetch(dataUrl)
   return response.text()
+}
+
+async function dataUrlToBlob(dataUrl: string) {
+  const response = await fetch(dataUrl)
+  return response.blob()
 }
 
 function katexCssWithCdnFonts() {
