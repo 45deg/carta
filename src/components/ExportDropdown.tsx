@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export type ExportFormat = "png" | "svg" | "pdf" | "html"
@@ -40,9 +41,7 @@ export function ExportDropdown({
       <DropdownMenuTrigger
         type="button"
         disabled={disabled}
-        variant={variant}
-        size={size}
-        className={cn(className)}
+        className={cn(buttonVariants({ variant, size }), className)}
       >
         {icon}
         {isSaving ? t("export.saving") : t("export.export")}

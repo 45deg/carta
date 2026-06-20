@@ -9,18 +9,14 @@ function DropdownMenu({ ...props }: React.ComponentProps<typeof Menu.Root>) {
   return <Menu.Root data-slot="dropdown-menu" {...props} />
 }
 
-import type { VariantProps } from "class-variance-authority"
-
 function DropdownMenuTrigger({
   className,
-  variant = "default",
-  size = "default",
   ...props
-}: React.ComponentProps<typeof Menu.Trigger> & VariantProps<typeof buttonVariants>) {
+}: React.ComponentProps<typeof Menu.Trigger>) {
   return (
     <Menu.Trigger
       data-slot="dropdown-menu-trigger"
-      className={cn(buttonVariants({ variant, size }), className)}
+      className={cn(buttonVariants({ variant: "default" }), className)}
       {...props}
     />
   )
@@ -33,11 +29,7 @@ function DropdownMenuContent({
 }: React.ComponentProps<typeof Menu.Popup>) {
   return (
     <Menu.Portal>
-      <Menu.Positioner
-        sideOffset={6}
-        data-slot="dropdown-menu-positioner"
-        className="z-50"
-      >
+      <Menu.Positioner sideOffset={6} className="z-50">
         <Menu.Popup
           data-slot="dropdown-menu-content"
           className={cn(

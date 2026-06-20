@@ -29,7 +29,7 @@ export function ValidationPanel({ validation }: ValidationPanelProps) {
 
   if (validation.ok) {
     return (
-      <Alert className="mt-3" variant="success">
+      <Alert className="mt-3 bg-emerald-50 border-emerald-200/60 text-emerald-800 dark:bg-emerald-950/30 dark:border-emerald-900/50 dark:text-emerald-400 [&_svg]:text-emerald-600 dark:[&_svg]:text-emerald-400">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="size-4" />
           <AlertTitle>{validation.message}</AlertTitle>

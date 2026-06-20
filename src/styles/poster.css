@@ -667,7 +667,6 @@
   .app-chrome,
   .editor-pane,
   .no-print,
-  [data-slot="dropdown-menu-positioner"],
   [data-slot="dropdown-menu-content"] {
     display: none !important;
   }
