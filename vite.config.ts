@@ -10,6 +10,15 @@ export default defineConfig({
   build: {
     outDir: "carta",
     chunkSizeWarningLimit: 800,
+    rolldownOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/lucide-react/dist/esm/icons")) {
+            return "lucide-icons"
+          }
+        },
+      },
+    },
   },
   resolve: {
     alias: {
