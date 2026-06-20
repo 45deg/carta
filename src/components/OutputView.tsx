@@ -258,7 +258,8 @@ export function OutputView({
                 <Slider
                   value={widthValue}
                   onValueChange={(val) => {
-                    setWidthValue(val)
+                    const nextValue = Array.isArray(val) ? val[0] : val
+                    setWidthValue(nextValue)
                   }}
                   min={600}
                   max={1200}
