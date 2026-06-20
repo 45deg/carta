@@ -262,7 +262,7 @@ export function OutputView({
                     setWidthValue(nextValue)
                   }}
                   min={600}
-                  max={1200}
+                  max={1600}
                   step={40}
                   aria-label={t("output.width")}
                 />

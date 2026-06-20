@@ -25,8 +25,6 @@ export function PosterCanvas({ children }: PosterCanvasProps) {
         initialScale={1}
         minScale={minScale}
         maxScale={maxScale}
-        centerOnInit
-        centerZoomedOut
         limitToBounds={false}
         smooth
         wheel={{ wheelDisabled: true }}
@@ -162,6 +160,10 @@ function fitToWidth(
   const fittedScale = (wrapper.clientWidth - fitPadding) / content.offsetWidth
   const nextScale = Math.min(maxScale, Math.max(minScale, fittedScale))
 
-  controls.centerView(nextScale, animationTime)
+  const scaledWidth = content.offsetWidth * nextScale
+  const x = (wrapper.clientWidth - scaledWidth) / 2
+  const y = fitPadding / 2
+
+  controls.setTransform(x, y, nextScale, animationTime)
   onScaleChange?.(nextScale)
 }
