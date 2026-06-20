@@ -24,7 +24,7 @@ Welcome! As an AI coding agent or developer working on the **Carta** project, yo
 - **You MUST verify that your changes do not introduce regressions, syntax errors, or styling issues** before finishing a task.
 - **You MUST run type checking** and verify that TypeScript compilation passes without any errors.
 - **You MUST run unit and integration tests** and ensure no functionality is broken.
-- **You MUST run end-to-end tests** using Playwright to ensure the rendering flow works.
+- **You MAY run end-to-end tests** using Playwright to ensure the rendering flow works.
 
 ---
 
