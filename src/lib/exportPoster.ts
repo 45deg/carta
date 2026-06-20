@@ -131,12 +131,13 @@ function posterCssForHtmlExport() {
     katexCssWithCdnFonts(),
     highlightCss,
     posterCss,
+    ".poster-export-page,.poster-export-page *,.poster-export-page *::before,.poster-export-page *::after{box-sizing:border-box;}",
     ".poster-root{width:var(--poster-page-width,960px);max-width:none;margin:0;box-shadow:none;}",
   ].join("\n")
 }
 
 export function savePosterHtml(node: HTMLElement, poster: Poster) {
-  const posterMarkup = node.outerHTML
+  const posterMarkup = posterMarkupForHtmlExport(node)
   const html = [
     "<!doctype html>",
     '<html lang="ja">',
@@ -160,6 +161,43 @@ export function savePosterHtml(node: HTMLElement, poster: Poster) {
     safeFileName(poster.title, "html"),
     "text/html;charset=utf-8"
   )
+}
+
+function posterMarkupForHtmlExport(node: HTMLElement) {
+  const exportNode = node.cloneNode(true) as HTMLElement
+  stabilizeMermaidSvgLabels(exportNode)
+  return exportNode.outerHTML
+}
+
+function stabilizeMermaidSvgLabels(node: HTMLElement) {
+  const mermaidSvgs = node.querySelectorAll<SVGSVGElement>(
+    '.poster-diagram[data-format="mermaid"] svg'
+  )
+
+  mermaidSvgs.forEach((svg) => {
+    svg.style.overflow = "visible"
+
+    svg.querySelectorAll<SVGForeignObjectElement>("foreignObject").forEach((label) => {
+      label.style.overflow = "visible"
+      label.setAttribute("overflow", "visible")
+    })
+
+    svg.querySelectorAll<HTMLElement>("foreignObject div").forEach((label) => {
+      label.style.fontFamily = '"trebuchet ms", verdana, arial, sans-serif'
+      label.style.lineHeight = "1.5"
+      label.style.overflow = "visible"
+    })
+
+    svg
+      .querySelectorAll<HTMLElement>("foreignObject p")
+      .forEach((paragraph) => {
+        paragraph.style.margin = "0"
+        paragraph.style.padding = "0"
+        paragraph.style.lineHeight = "1.5"
+        paragraph.style.overflow = "visible"
+        paragraph.style.whiteSpace = "nowrap"
+      })
+  })
 }
 
 export function printPoster() {

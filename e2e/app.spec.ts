@@ -108,6 +108,10 @@ test.describe("Poster Card Generator E2E", () => {
     expect(htmlContent).toContain("<!doctype html>")
     expect(htmlContent).toContain("<title>分割統治法：構造・手順・計算量</title>")
     expect(htmlContent).toContain("分割統治法：構造・手順・計算量")
+    expect(htmlContent).toContain('class="nodeLabel"')
+    expect(htmlContent).toContain("font-family")
+    expect(htmlContent).toContain("margin: 0px")
+    expect(htmlContent).toContain("overflow: visible")
 
     // Wait for the dropdown menu to completely close before clicking again
     await expect(page.locator("text=保存形式")).not.toBeVisible()
