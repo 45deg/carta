@@ -1,0 +1,62 @@
+.poster-root {
+  --poster-base-font-size: 16px;
+  --poster-print-font-size: 10.5pt;
+  --poster-page-width: 960px;
+  --poster-ink: #171717;
+  --poster-muted: #767676;
+  --poster-line: #949494;
+  --poster-paper: #ffffff;
+  width: var(--poster-page-width);
+  min-width: var(--poster-page-width);
+  max-width: none;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--poster-paper);
+  color: var(--poster-ink);
+  font-size: var(--poster-base-font-size);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+  font-family:
+    "Noto Sans JP",
+    "Inter Variable",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+@media (max-width: 720px) {
+  .poster-root {
+    padding: 18px;
+  }
+}
+
+.poster-header {
+  display: grid;
+  gap: 0.55rem;
+  border-bottom: 2px solid var(--poster-line);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  break-inside: avoid;
+}
+
+.poster-blocks[data-column-count="1"] .poster-header {
+  margin-bottom: 0;
+}
+
+.poster-header h1 {
+  margin: 0;
+  font-size: 2.25em;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.poster-header p:last-child {
+  margin: 0;
+  color: var(--poster-ink);
+  font-size: 1.15em;
+  font-weight: 500;
+}

@@ -1,5 +1,5 @@
 import { type Poster } from "@/schema/posterSchema"
-import posterCss from "@/styles/poster.css?raw"
+import posterCss from "@/styles/poster.css?inline"
 import { safeFileName } from "@/lib/safeFileName"
 import katexCss from "katex/dist/katex.min.css?raw"
 import highlightCss from "highlight.js/styles/github.css?raw"

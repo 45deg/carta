@@ -441,21 +441,6 @@ function App() {
               </CardFooter>
             </Card>
           </section>
-
-          <footer className="mt-auto flex flex-col items-center justify-between gap-4 border-t border-muted/30 py-6 text-xs text-muted-foreground sm:flex-row">
-            <p>© {new Date().getFullYear()} Carta. Licensed under MIT.</p>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/45deg/carta"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-              >
-                <Github className="size-3.5" />
-                GitHub
-              </a>
-            </div>
-          </footer>
         </div>
       </main>
     )
@@ -505,9 +490,8 @@ function App() {
           </div>
 
           <div
-            className={`${
-              showSettings ? "flex" : "hidden"
-            } mt-1 flex-wrap items-center gap-x-6 gap-y-3 border-t border-muted pt-3 md:mt-0 md:flex md:border-t-0 md:pt-0`}
+            className={`${showSettings ? "flex" : "hidden"
+              } mt-1 flex-wrap items-center gap-x-6 gap-y-3 border-t border-muted pt-3 md:mt-0 md:flex md:border-t-0 md:pt-0`}
           >
             <div className="flex items-center gap-2 text-sm">
               <label className="font-medium" htmlFor="poster-font-size">

@@ -1,0 +1,67 @@
+.poster-card {
+  --poster-card-accent: #005aff;
+  --poster-card-accent-text: #ffffff;
+  --poster-card-border: var(--poster-line);
+  --poster-card-surface: #ffffff;
+  min-width: 0;
+  border: 1px solid var(--poster-card-border);
+  border-top: 4px solid var(--poster-card-accent);
+  border-radius: 4px;
+  background: var(--poster-card-surface);
+  color: var(--poster-ink);
+}
+
+.poster-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 1rem 1.15rem 0.55rem;
+  color: var(--poster-card-accent);
+}
+
+.poster-card-emoji {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  color: currentColor;
+  font-size: 1.05em;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.poster-card-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  color: currentColor;
+}
+
+.poster-card h2 {
+  margin: 0;
+  color: currentColor;
+  font-size: 1.18em;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.poster-card-body {
+  display: grid;
+  min-width: 0;
+  gap: 0;
+  padding: 0.55rem 1.15rem 1.05rem;
+}
+
+.poster-card-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.poster-card-body > * + * {
+  margin-top: 0.8rem;
+}
