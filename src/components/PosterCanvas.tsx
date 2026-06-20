@@ -10,20 +10,18 @@ import { Button } from "@/components/ui/button"
 
 type PosterCanvasProps = {
   children: ReactNode
-  resetKey: string
 }
 
 const minScale = 0.2
 const maxScale = 2
 const fitPadding = 48
 
-export function PosterCanvas({ children, resetKey }: PosterCanvasProps) {
+export function PosterCanvas({ children }: PosterCanvasProps) {
   const [scale, setScale] = useState(1)
 
   return (
     <section className="poster-canvas" aria-label="Poster canvas">
       <TransformWrapper
-        key={resetKey}
         initialScale={1}
         minScale={minScale}
         maxScale={maxScale}
