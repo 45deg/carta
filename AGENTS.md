@@ -16,6 +16,7 @@ Welcome! As an AI coding agent or developer working on the **Carta** project, yo
   - English Locale: `src/locales/en.ts`
   - Japanese Locale: `src/locales/ja.ts`
 - **NEVER edit files under `src/components/ui/` directly.** These are managed by the shadcn CLI. You MUST customize them by passing classes via the `className` prop, or by writing wrapper components in `src/components/` if logic overrides are needed.
+- **You MUST keep `SPEC.md` synchronized with the current poster input specification.** If you change accepted input fields, block/content types, enum values, validation rules, Markdown/math/Mermaid/Vega-Lite contracts, sample YAML expectations, or `src/lib/prompt.ts` input guidance, update `SPEC.md` in the same change.
 
 ---
 
