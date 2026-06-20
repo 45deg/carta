@@ -3,7 +3,7 @@ import { Check, Circle } from "lucide-react"
 import {
   InlineMarkdownRenderer,
   MarkdownRenderer,
-} from "@/components/MarkdownRenderer"
+} from "@/components/PosterMarkdown"
 import { type ListBlock as ListBlockType } from "@/schema/posterSchema"
 
 type ListBlockProps = {

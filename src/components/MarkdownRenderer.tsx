@@ -8,7 +8,7 @@ import remarkCjkFriendly from "remark-cjk-friendly"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 
-type MarkdownRendererProps = {
+export type MarkdownRendererProps = {
   text: string
 }
 

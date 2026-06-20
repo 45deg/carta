@@ -14,12 +14,12 @@ import { PosterCanvas } from "@/components/PosterCanvas"
 import { FontSizeCombobox } from "@/components/FontSizeCombobox"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   posterFontSizeOptions,
   posterColumnCountOptions,
 } from "@/constants/posterDefaults"
+import { preloadMarkdownRenderer } from "@/lib/preloadMarkdownRenderer"
 import { type Poster, type PosterValidationResult } from "@/schema/posterSchema"
 
 type PosterFontSizeValue = (typeof posterFontSizeOptions)[number]["value"]
@@ -143,6 +143,9 @@ export function OutputView({
     setIsSaving(true)
     setExportError(null)
     try {
+      await preloadMarkdownRenderer()
+      await waitForRenderPass()
+
       const { printPoster, savePosterHtml, savePosterPng, savePosterSvg } =
         await import("@/lib/exportPoster")
 
@@ -255,15 +258,16 @@ export function OutputView({
                 {t("output.width")}: {widthValue}px
               </span>
               <div className="flex w-32 items-center px-1">
-                <Slider
+                <input
+                  type="range"
                   value={widthValue}
-                  onValueChange={(val) => {
-                    const nextValue = Array.isArray(val) ? val[0] : val
-                    setWidthValue(nextValue)
+                  onChange={(event) => {
+                    setWidthValue(Number(event.currentTarget.value))
                   }}
                   min={600}
                   max={1600}
                   step={40}
+                  className="h-2 w-full cursor-pointer accent-primary"
                   aria-label={t("output.width")}
                 />
               </div>
@@ -374,4 +378,12 @@ export function OutputView({
       </div>
     </main>
   )
+}
+
+function waitForRenderPass() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve())
+    })
+  })
 }

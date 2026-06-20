@@ -114,7 +114,7 @@ function ZoomControls({
         size="sm"
         title="Set zoom to 100%"
         aria-label="Set zoom to 100%"
-        className="px-2.5"
+        className="poster-zoom-reset px-2.5"
         onClick={() => controls.centerView(1, 160)}
       >
         <RotateCcw className="size-4" />

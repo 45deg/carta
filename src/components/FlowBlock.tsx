@@ -1,4 +1,4 @@
-import { MarkdownRenderer } from "@/components/MarkdownRenderer"
+import { MarkdownRenderer } from "@/components/PosterMarkdown"
 import { type FlowBlock as FlowBlockType } from "@/schema/posterSchema"
 
 type FlowBlockProps = {

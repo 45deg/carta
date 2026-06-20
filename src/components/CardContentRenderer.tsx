@@ -3,7 +3,7 @@ import { type CSSProperties } from "react"
 import { DiagramBlock } from "@/components/DiagramBlock"
 import { FlowBlock } from "@/components/FlowBlock"
 import { ListBlock } from "@/components/ListBlock"
-import { MarkdownRenderer } from "@/components/MarkdownRenderer"
+import { MarkdownRenderer } from "@/components/PosterMarkdown"
 import { type CardContent } from "@/schema/posterSchema"
 
 type CardContentRendererProps = {

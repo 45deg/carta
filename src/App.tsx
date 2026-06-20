@@ -51,7 +51,7 @@ function App() {
     useState<PosterColumnCountValue>(defaultColumnCountValue)
   const [copiedPrompt, setCopiedPrompt] = useState(false)
 
-  // Debouncing effect for width slider updates to avoid laggy preview updates
+  // Debouncing effect for width range updates to avoid laggy preview updates
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedWidth(widthValue)

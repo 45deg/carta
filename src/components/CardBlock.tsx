@@ -1,8 +1,7 @@
-import { type CSSProperties } from "react"
-import { DynamicIcon, iconNames, type IconName } from "lucide-react/dynamic"
+import { lazy, Suspense, type CSSProperties } from "react"
 
 import { CardContentRenderer } from "@/components/CardContentRenderer"
-import { MarkdownRenderer } from "@/components/MarkdownRenderer"
+import { MarkdownRenderer } from "@/components/PosterMarkdown"
 import {
   type CardBlock as CardBlockType,
   type PosterColor,
@@ -13,6 +12,12 @@ type CardBlockProps = {
 }
 
 type PosterColorKind = "accent" | "neutral"
+
+const LucideCardIcon = lazy(() =>
+  import("@/components/LucideCardIcon").then((module) => ({
+    default: module.LucideCardIcon,
+  })),
+)
 
 const posterColorMap: Record<
   PosterColor,
@@ -29,8 +34,6 @@ const posterColorMap: Record<
   note: { hex: "#4B5563", kind: "neutral" },
 }
 
-const iconNameSet = new Set<string>(iconNames)
-
 export function CardBlock({ block }: CardBlockProps) {
   const color = (block.color && posterColorMap[block.color])
     ? posterColorMap[block.color]
@@ -44,8 +47,6 @@ export function CardBlock({ block }: CardBlockProps) {
     "--poster-card-surface": "#ffffff",
   } as CSSProperties
 
-  const iconName = block.icon ? getLucideIconName(block.icon) : null
-
   return (
     <section
       className="poster-card"
@@ -53,10 +54,10 @@ export function CardBlock({ block }: CardBlockProps) {
       style={style}
     >
       <div className="poster-card-heading">
-        {iconName ? (
-          <span className="poster-card-icon">
-            <DynamicIcon name={iconName} />
-          </span>
+        {block.icon ? (
+          <Suspense fallback={null}>
+            <LucideCardIcon name={block.icon} fallbackEmoji={block.emoji} />
+          </Suspense>
         ) : block.emoji ? (
           <span className="poster-card-emoji">{block.emoji}</span>
         ) : null}
@@ -73,17 +74,6 @@ export function CardBlock({ block }: CardBlockProps) {
       </div>
     </section>
   )
-}
-
-function getLucideIconName(name: string): IconName | null {
-  const normalized = name
-    .trim()
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/_/g, "-")
-    .replace(/[^a-zA-Z0-9-]/g, "")
-    .toLowerCase()
-
-  return iconNameSet.has(normalized) ? (normalized as IconName) : null
 }
 
 function readableTextColor(hex: string) {
