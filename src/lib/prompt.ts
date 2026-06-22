@@ -37,7 +37,7 @@ description: "ポスター全体の短い説明"
 blocks: []
 \`\`\`
 
-* title: ポスター全体の主題を短く表す。
+* title: ポスター全体の主題を短く表す。インライン数式は$...$で書ける。
 * description: 何を学べるかを1〜2文で説明する。
 * blocks: 表示する内容ブロックの配列。1件以上必要。
 
@@ -72,7 +72,7 @@ color: "danger | important | default | supplement | procedure | concept | term |
 body: "Markdown文字列、またはcontent配列"
 \`\`\`
 
-* title: カードの内容が一目で分かる見出し。
+* title: カードの内容が一目で分かる見出し。インライン数式は$...$で書ける。
 * emoji: 任意。カードの役割を補助する短い絵文字。iconが指定された場合はそちらが優先されます。
 * icon: 任意。カードの役割を補助するLucideアイコン名。
 * color: カードの役割を示すセマンティック名。
@@ -205,7 +205,7 @@ items:
 * YAMLのbody, text, caption, flow.items.body, list.items.bodyに数式、バックスラッシュ、コロン、引用符、改行が含まれる場合は、必ずブロックスカラー（|）を使う。
 * 短い本文でもLaTeXを含むなら body: | の複数行形式にする。
 * JSONではLaTeXのバックスラッシュをJSON文字列として正しくエスケープする。
-* Mermaidのbody内にはLaTeX数式を書かない。数式が必要な場合はcaptionまたはMarkdown本文に書く。
+* Mermaidのbodyで数式を使う場合は、対応する図中テキスト内で \`$$...$$\` のみを使う。
 * 通貨、変数名、プログラム中の $ など、数式ではない $ は数式区切りと誤解されないよう文脈を明確にする。
 
 YAMLで安全な数式本文の例:
@@ -336,7 +336,7 @@ description: "Short description of the entire poster"
 blocks: []
 \`\`\`
 
-* title: Briefly represents the main subject of the poster.
+* title: Briefly represents the main subject of the poster. Inline math can be written with $...$.
 * description: Describes what can be learned in 1-2 sentences.
 * blocks: Array of content blocks to display. At least one is required.
 
@@ -371,7 +371,7 @@ color: "danger | important | default | supplement | procedure | concept | term |
 body: "Markdown string, or content array"
 \`\`\`
 
-* title: Heading that shows the content of the card at a glance.
+* title: Heading that shows the content of the card at a glance. Inline math can be written with $...$.
 * emoji: Optional. Short emoji to support the card's role. If icon is specified, it takes priority.
 * icon: Optional. Lucide icon name to support the card's role.
 * color: Semantic name indicating the card's role.
@@ -504,7 +504,7 @@ items:
 * Always use block scalars (|) if body, text, caption, flow.items.body, list.items.body contain formulas, backslashes, colons, quotes, or newlines.
 * Even for short text, use the multi-line format body: | if it contains LaTeX.
 * In JSON, escape LaTeX backslashes correctly as JSON strings.
-* Do not write LaTeX formulas inside Mermaid body. Write formulas in the caption or markdown text instead.
+* Mermaid body can render math with KaTeX, but only with \`$$...$$\` delimiters inside supported diagram text.
 * Clarify context for non-formula $ characters (currencies, variables, program code $) so they are not mistaken for formula delimiters.
 
 Safe formula example in YAML:
@@ -596,4 +596,3 @@ Always check before outputting.
 * "Shorten": Reduce redundancy, keep definitions, formulas, examples, and warnings.
 * "Elaborate": Add blocks, premises, examples, diagrams, tables, and warnings. Split topics into new blocks.
 `
-

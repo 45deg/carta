@@ -1,6 +1,7 @@
 import { type CSSProperties, forwardRef } from "react"
 
 import { BlockRenderer } from "@/components/BlockRenderer"
+import { InlineMarkdownRenderer } from "@/components/PosterMarkdown"
 import { type Poster } from "@/schema/posterSchema"
 import "@/styles/poster.css"
 
@@ -20,14 +21,17 @@ export const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(
         style={
           {
             "--poster-base-font-size": `${baseFontSize}px`,
-            "--poster-page-width": width === "fit" ? "100%" : `${width * (columnCount ?? 1)}px`,
+            "--poster-page-width":
+              width === "fit" ? "100%" : `${width * (columnCount ?? 1)}px`,
             "--poster-column-count": columnCount ?? 1,
           } as CSSProperties
         }
       >
         <div className="poster-blocks" data-column-count={columnCount ?? 1}>
           <header className="poster-header">
-            <h1>{poster.title}</h1>
+            <h1>
+              <InlineMarkdownRenderer text={poster.title} />
+            </h1>
             <p>{poster.description}</p>
           </header>
           {poster.blocks.map((block, index) => (

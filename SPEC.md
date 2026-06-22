@@ -289,7 +289,7 @@ Supported Markdown fields include:
 
 Use `$...$` for inline math and `$$...$$` for display math. In YAML, use block scalars (`|`) for strings containing LaTeX backslashes, `$...$`, colons, quotes, or multiline content.
 
-Do not put LaTeX formulas inside Mermaid `body`; put them in Markdown text or captions.
+Mermaid `body` can render math with KaTeX, but only with `$$...$$` delimiters inside supported diagram text. If you do not need formulas inside the diagram text itself, put them in Markdown text or captions.
 
 ## 9. Mermaid Rules
 

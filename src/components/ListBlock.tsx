@@ -20,7 +20,11 @@ export function ListBlock({ block, embedded = false }: ListBlockProps) {
       data-embedded={embedded ? "true" : "false"}
       data-variant={variant}
     >
-      {block.title ? <h3 className="poster-list-title">{block.title}</h3> : null}
+      {block.title ? (
+        <h3 className="poster-list-title">
+          <InlineMarkdownRenderer text={block.title} />
+        </h3>
+      ) : null}
       <ul className="poster-list-items">
         {block.items.map((item, index) => (
           <li key={index} className="poster-list-item">

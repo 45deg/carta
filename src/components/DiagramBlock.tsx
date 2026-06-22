@@ -2,6 +2,7 @@ import { type CSSProperties, useEffect, useId, useRef, useState } from "react"
 import yaml from "js-yaml"
 import { useTranslation } from "react-i18next"
 
+import { InlineMarkdownRenderer } from "@/components/PosterMarkdown"
 import { type DiagramBlock as DiagramBlockType } from "@/schema/posterSchema"
 
 type VisualizationSpec = Record<string, unknown>
@@ -68,7 +69,11 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
         })
       } catch (caught) {
         if (!cancelled) {
-          setError(caught instanceof Error ? caught.message : t("diagram.renderErrorDefault"))
+          setError(
+            caught instanceof Error
+              ? caught.message
+              : t("diagram.renderErrorDefault")
+          )
         }
       }
     }
@@ -87,7 +92,11 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
       data-format={block.format}
       style={style}
     >
-      {block.title ? <h3 className="poster-diagram-title">{block.title}</h3> : null}
+      {block.title ? (
+        <h3 className="poster-diagram-title">
+          <InlineMarkdownRenderer text={block.title} />
+        </h3>
+      ) : null}
       {error ? (
         <div className="poster-diagram-error">
           <strong>{t("diagram.renderErrorTitle")}</strong>
@@ -103,7 +112,6 @@ export function DiagramBlock({ block, embedded = false }: DiagramBlockProps) {
     </figure>
   )
 }
-
 
 function formatDiagramBody(body: unknown): string {
   if (typeof body === "string") {

@@ -1,7 +1,10 @@
 import { lazy, Suspense, type CSSProperties } from "react"
 
 import { CardContentRenderer } from "@/components/CardContentRenderer"
-import { MarkdownRenderer } from "@/components/PosterMarkdown"
+import {
+  InlineMarkdownRenderer,
+  MarkdownRenderer,
+} from "@/components/PosterMarkdown"
 import {
   type CardBlock as CardBlockType,
   type PosterColor,
@@ -16,7 +19,7 @@ type PosterColorKind = "accent" | "neutral"
 const LucideCardIcon = lazy(() =>
   import("@/components/LucideCardIcon").then((module) => ({
     default: module.LucideCardIcon,
-  })),
+  }))
 )
 
 const posterColorMap: Record<
@@ -35,9 +38,10 @@ const posterColorMap: Record<
 }
 
 export function CardBlock({ block }: CardBlockProps) {
-  const color = (block.color && posterColorMap[block.color])
-    ? posterColorMap[block.color]
-    : posterColorMap["default"]
+  const color =
+    block.color && posterColorMap[block.color]
+      ? posterColorMap[block.color]
+      : posterColorMap["default"]
   const style = {
     "--poster-card-color": color.hex,
     "--poster-card-kind": color.kind,
@@ -50,7 +54,9 @@ export function CardBlock({ block }: CardBlockProps) {
   return (
     <section
       className="poster-card"
-      data-color={(block.color && posterColorMap[block.color]) ? block.color : "default"}
+      data-color={
+        block.color && posterColorMap[block.color] ? block.color : "default"
+      }
       style={style}
     >
       <div className="poster-card-heading">
@@ -61,7 +67,9 @@ export function CardBlock({ block }: CardBlockProps) {
         ) : block.emoji ? (
           <span className="poster-card-emoji">{block.emoji}</span>
         ) : null}
-        <h2>{block.title}</h2>
+        <h2>
+          <InlineMarkdownRenderer text={block.title} />
+        </h2>
       </div>
       <div className="poster-card-body">
         {typeof block.body === "string" ? (
